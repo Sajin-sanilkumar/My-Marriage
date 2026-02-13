@@ -1,0 +1,40 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+@import "tailwindcss";
+
+*{
+    font-family: "Inter", sans-serif;
+    box-sizing: border-box;
+}
+body{
+    margin: 0%;
+    padding:0%;
+    box-sizing: border-box;
+    color: black !important;
+    scroll-behavior: smooth;
+}
+.main-bg{
+    @apply bg-[#FEFEFE]
+}
+.secoundary-bg{
+    @apply bg-[#F2F2F2]
+}
+.fade-text{
+    color: #888888;
+}
+.fade-bg{
+    color: #888888;
+}
+.primaryfont{
+    font-family: "Inter", sans-serif;
+    font-optical-sizing: auto;
+}
+.fancy-text{
+    font-family: "Caveat", cursive !important;
+}
+#P1:hover{
+    color: rgb(183, 47, 224);
+}
+#P2:hover{
+    color: rgb(6, 172, 70);
+}
