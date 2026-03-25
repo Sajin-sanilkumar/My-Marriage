@@ -1,40 +1,69 @@
-
-@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap');
 @import "tailwindcss";
 
-*{
-    font-family: "Inter", sans-serif;
-    box-sizing: border-box;
+@theme {
+  --color-wedding-blue-50: #eff6ff;
+  --color-wedding-blue-100: #dbeafe;
+  --color-wedding-blue-500: #3b82f6;
+  --color-wedding-blue-800: #1e40af;
+  --color-wedding-blue-900: #1e3a8a;
+  
+  --color-wedding-green-100: #dcfce7;
+  --color-wedding-green-500: #22c55e;
+  
+  --color-wedding-white: #ffffff;
+  --color-wedding-offwhite: #f8fafc;
 }
-body{
-    margin: 0%;
-    padding:0%;
-    box-sizing: border-box;
-    color: black !important;
-    scroll-behavior: smooth;
+
+:root {
+  --font-serif: "Playfair Display", serif;
+  --font-sans: "Outfit", sans-serif;
+  --color-text: #1e293b;
 }
-.main-bg{
-    @apply bg-[#FEFEFE]
+
+* {
+  font-family: var(--font-sans);
+  box-sizing: border-box;
 }
-.secoundary-bg{
-    @apply bg-[#F2F2F2]
+
+h1, h2, h3, h4, .font-serif {
+  font-family: var(--font-serif);
 }
-.fade-text{
-    color: #888888;
+
+body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  color: var(--color-text);
+  background-color: var(--color-wedding-offwhite);
+  scroll-behavior: smooth;
+  overflow-x: hidden;
 }
-.fade-bg{
-    color: #888888;
+
+/* Glassmorphism utility */
+.glass {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
 }
-.primaryfont{
-    font-family: "Inter", sans-serif;
-    font-optical-sizing: auto;
+
+/* Soft shadows for cards */
+.soft-shadow {
+  box-shadow: 0 10px 40px -10px rgba(0,0,0,0.08);
 }
-.fancy-text{
-    font-family: "Caveat", cursive !important;
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
 }
-#P1:hover{
-    color: rgb(183, 47, 224);
+::-webkit-scrollbar-track {
+  background: #f1f1f1; 
 }
-#P2:hover{
-    color: rgb(6, 172, 70);
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1; 
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8; 
 }
