@@ -20,6 +20,7 @@
     "phone-mockup-react": "^1.1.14",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
+    "react-player": "^3.4.0",
     "react-router-dom": "^7.6.2",
     "react-scroll": "^1.9.3",
     "react-toastify": "^11.0.5",

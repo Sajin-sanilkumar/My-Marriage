@@ -1,26 +1,12 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Music, VolumeX } from 'lucide-react';
+import ReactPlayer from 'react-player';
 
 const WeddingMusicToggle = () => {
     const [isPlaying, setIsPlaying] = useState(false);
-    const audioRef = useRef(null);
-
-    // A placeholder elegant instrumental track
-    const audioSrc = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3";
-
-    useEffect(() => {
-        if (audioRef.current) {
-            audioRef.current.volume = 0.3; // soft background volume
-        }
-    }, []);
 
     const togglePlay = () => {
-        if (isPlaying) {
-            audioRef.current.pause();
-        } else {
-            audioRef.current.play().catch(e => console.log("Audio play failed", e));
-        }
         setIsPlaying(!isPlaying);
     };
 
@@ -31,7 +17,18 @@ const WeddingMusicToggle = () => {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 1, duration: 0.5 }}
         >
-            <audio ref={audioRef} src={audioSrc} loop />
+            <div className="hidden">
+                <ReactPlayer
+                    url="https://www.youtube.com/watch?v=-jHKRebywaw"
+                    playing={isPlaying}
+                    loop={true}
+                    volume={0.8}
+                    width="0"
+                    height="0"
+                    style={{ display: 'none' }}
+                />
+            </div>
+
             <button
                 onClick={togglePlay}
                 className="flex items-center justify-center w-12 h-12 rounded-full glass soft-shadow bg-white/60 hover:bg-white/90 transition-all duration-300 text-[var(--color-wedding-blue-800)]"

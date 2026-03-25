@@ -5,7 +5,6 @@ import WeddingHero from '../components/WeddingHero';
 import WeddingTimeline from '../components/WeddingTimeline';
 import WeddingGallery from '../components/WeddingGallery';
 import WeddingWishes from '../components/WeddingWishes';
-import WeddingContact from '../components/WeddingContact';
 import WeddingFooter from '../components/WeddingFooter';
 
 const Wedding = () => {
@@ -17,7 +16,6 @@ const Wedding = () => {
                 <WeddingTimeline />
                 <WeddingGallery />
                 <WeddingWishes />
-                <WeddingContact />
             </main>
             <WeddingFooter />
         </div>
