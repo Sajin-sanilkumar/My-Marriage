@@ -28,7 +28,7 @@ const timelineEvents = [
         id: 3,
         title: "Bride Side Reception",
         date: "May 2, 2026",
-        time: "Time to be decided",
+        time: "5:00 PM – 9:30 PM",
         location: "Athafy Auditorium",
         mapQuery: "Athafy Auditorium",
         mapLink: "https://maps.app.goo.gl/As3ALXYUQkwDBBHA6",

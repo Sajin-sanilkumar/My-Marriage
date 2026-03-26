@@ -1,7 +1,6 @@
 import React, { useRef } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, Environment, Float, Sparkles, ContactShadows } from '@react-three/drei';
-import * as THREE from 'three';
 
 const AnimatedCouple = () => {
     const groomRef = useRef();
@@ -11,12 +10,15 @@ const AnimatedCouple = () => {
     useFrame((state) => {
         const t = state.clock.getElapsedTime();
         if (groupRef.current) {
+            // Slow pedestal rotation
             groupRef.current.rotation.y = t * 0.2;
         }
         if (groomRef.current && brideRef.current) {
+            // Gentle dancing / bobbing motion
             groomRef.current.position.y = Math.sin(t * 2) * 0.05 + 0.5;
             brideRef.current.position.y = Math.sin(t * 2 + 0.5) * 0.05 + 0.4;
 
+            // Slight swaying
             groomRef.current.rotation.z = Math.sin(t * 1.5) * 0.05;
             brideRef.current.rotation.z = Math.sin(t * 1.5 + 0.5) * 0.05;
         }
