@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { weddingConfig } from "@/lib/wedding-config";
 
 type Params = { params: { slug: string } };
 
@@ -11,9 +12,9 @@ function toCategorySlug(name: string): string {
     .replace(/^-|-$/g, "");
 }
 
-function buildInviteUrl(req: NextRequest, weddingSlug: string, categorySlug: string): string {
-  const origin = req.headers.get("origin") ?? req.nextUrl.origin;
-  return `${origin}/invite/${weddingSlug}/${categorySlug}`;
+function buildInviteUrl(weddingSlug: string, categorySlug: string): string {
+  const base = (process.env.INVITE_BASE_URL ?? "").replace(/\/$/, "");
+  return `${base}/invite/${weddingSlug}/${categorySlug}`;
 }
 
 // POST /api/weddings/[slug]/categories
@@ -71,7 +72,7 @@ export async function POST(req: NextRequest, { params }: Params) {
     return NextResponse.json(
       {
         ...category,
-        invite_url: buildInviteUrl(req, params.slug, slug),
+        invite_url: buildInviteUrl(weddingConfig.slug, slug),
       },
       { status: 201 }
     );
@@ -110,11 +111,13 @@ export async function GET(req: NextRequest, { params }: Params) {
       ...cat,
       link_click_count: cat._count.link_clicks,
       rsvp_count: cat._count.rsvps,
-      invite_url: buildInviteUrl(req, params.slug, cat.slug),
+      invite_url: buildInviteUrl(weddingConfig.slug, cat.slug),
       _count: undefined,
     }));
 
-    return NextResponse.json(result);
+    return NextResponse.json(result, {
+      headers: { "Cache-Control": "s-maxage=60, stale-while-revalidate=300" },
+    });
   } catch (error) {
     console.error(`[GET /api/weddings/${params.slug}/categories]`, error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });

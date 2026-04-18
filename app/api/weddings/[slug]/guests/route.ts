@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { weddingConfig } from "@/lib/wedding-config";
 import { Side, Prisma } from "@prisma/client";
 
 type Params = { params: { slug: string } };
@@ -12,9 +13,9 @@ function toGuestSlug(name: string): string {
     .replace(/^-|-$/g, "");
 }
 
-function buildPersonalUrl(req: NextRequest, weddingSlug: string, guestSlug: string): string {
-  const origin = req.headers.get("origin") ?? req.nextUrl.origin;
-  return `${origin}/invite/${weddingSlug}/guest/${guestSlug}`;
+function buildPersonalUrl(weddingSlug: string, guestSlug: string): string {
+  const base = (process.env.INVITE_BASE_URL ?? "").replace(/\/$/, "");
+  return `${base}/invite/${weddingSlug}/guest/${guestSlug}`;
 }
 
 // POST /api/weddings/[slug]/guests
@@ -89,7 +90,7 @@ export async function POST(req: NextRequest, { params }: Params) {
     });
 
     return NextResponse.json(
-      { ...guest, invite_url: buildPersonalUrl(req, params.slug, slug) },
+      { ...guest, invite_url: buildPersonalUrl(weddingConfig.slug, slug) },
       { status: 201 }
     );
   } catch (error) {
@@ -155,7 +156,7 @@ export async function GET(req: NextRequest, { params }: Params) {
       click_count:  g._count.link_clicks,
       has_rsvp:     g._count.rsvps > 0,
       has_opened:   g._count.link_clicks > 0,
-      invite_url:   buildPersonalUrl(req, params.slug, g.slug),
+      invite_url:   buildPersonalUrl(weddingConfig.slug, g.slug),
       _count:       undefined,
     }));
 

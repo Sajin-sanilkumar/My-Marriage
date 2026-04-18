@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { weddingConfig } from "@/lib/wedding-config";
 import {
   generateWhatsAppShareURL,
   generateWhatsAppDirectURL,
@@ -10,7 +11,7 @@ import {
 type Params = { params: { slug: string } };
 
 // POST /api/weddings/[slug]/whatsapp-links
-export async function POST(req: NextRequest, { params }: Params) {
+export async function POST(_req: NextRequest, { params }: Params) {
   try {
     const wedding = await prisma.wedding.findUnique({
       where: { slug: params.slug },
@@ -19,15 +20,7 @@ export async function POST(req: NextRequest, { params }: Params) {
       return NextResponse.json({ error: "Wedding not found" }, { status: 404 });
     }
 
-    // Optional override base URL from body (e.g. custom domain)
-    let body: { base_url?: string } = {};
-    try { body = await req.json(); } catch { /* body is optional */ }
-
-    const origin = body.base_url?.replace(/\/$/, "")
-      ?? req.headers.get("origin")
-      ?? req.nextUrl.origin;
-
-    const inviteBase = `${origin}/invite/${wedding.slug}`;
+    const inviteBase = `${(process.env.INVITE_BASE_URL ?? "").replace(/\/$/, "")}/invite/${weddingConfig.slug}`;
 
     // ── Fetch categories and VIP guests in parallel ───────────────────────
     const [categories, vipGuests] = await Promise.all([
@@ -79,10 +72,10 @@ export async function POST(req: NextRequest, { params }: Params) {
         };
       });
 
-    return NextResponse.json({
-      categories:  categoryLinks,
-      vip_guests:  vipLinks,
-    });
+    return NextResponse.json(
+      { categories: categoryLinks, vip_guests: vipLinks },
+      { headers: { "Cache-Control": "s-maxage=120, stale-while-revalidate=600" } }
+    );
   } catch (error) {
     console.error(`[POST /api/weddings/${params.slug}/whatsapp-links]`, error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });

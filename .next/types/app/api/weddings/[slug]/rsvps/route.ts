@@ -1,8 +1,8 @@
-// File: C:\Users\abhij\Downloads\wedvite\wedvite-dashboard\app\api\weddings\[slug]\route.ts
-import * as entry from '../../../../../../app/api/weddings/[slug]/route.js'
+// File: C:\Users\abhij\Downloads\wedvite\wedvite-dashboard\app\api\weddings\[slug]\rsvps\route.ts
+import * as entry from '../../../../../../../app/api/weddings/[slug]/rsvps/route.js'
 import type { NextRequest } from 'next/server.js'
 
-type TEntry = typeof import('../../../../../../app/api/weddings/[slug]/route.js')
+type TEntry = typeof import('../../../../../../../app/api/weddings/[slug]/rsvps/route.js')
 
 // Check that the entry is a valid entry
 checkFields<Diff<{

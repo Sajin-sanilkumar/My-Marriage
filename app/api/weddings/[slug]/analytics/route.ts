@@ -182,17 +182,20 @@ export async function GET(_req: NextRequest, { params }: Params) {
       count: Number(row.count),
     }));
 
-    return NextResponse.json({
-      total_clicks,
-      unique_clicks:      uniqueIpGroups.length,
-      total_rsvps,
-      total_attending:    attending_rsvps,
-      total_guest_count:  guestCountAgg._sum.guest_count ?? 0,
-      category_breakdown,
-      event_breakdown,
-      not_responded_vip,
-      daily_rsvp_trend,
-    });
+    return NextResponse.json(
+      {
+        total_clicks,
+        unique_clicks:      uniqueIpGroups.length,
+        total_rsvps,
+        total_attending:    attending_rsvps,
+        total_guest_count:  guestCountAgg._sum.guest_count ?? 0,
+        category_breakdown,
+        event_breakdown,
+        not_responded_vip,
+        daily_rsvp_trend,
+      },
+      { headers: { "Cache-Control": "s-maxage=60, stale-while-revalidate=300" } }
+    );
   } catch (error) {
     console.error(`[GET /api/weddings/${params.slug}/analytics]`, error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });

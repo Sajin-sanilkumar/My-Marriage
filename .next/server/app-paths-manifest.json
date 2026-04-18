@@ -1,4 +1,5 @@
 {
-  "/api/weddings/[slug]/route": "app/api/weddings/[slug]/route.js",
-  "/page": "app/page.js"
+  "/dashboard/whatsapp/page": "app/dashboard/whatsapp/page.js",
+  "/dashboard/categories/page": "app/dashboard/categories/page.js",
+  "/dashboard/page": "app/dashboard/page.js"
 }

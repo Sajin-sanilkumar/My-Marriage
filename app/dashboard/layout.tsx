@@ -1,12 +1,13 @@
 import { SidebarNav, MobileNav } from "@/components/dashboard/sidebar-nav";
 import { Badge } from "@/components/ui/badge";
 import { CalendarDays, Heart } from "lucide-react";
+import { weddingConfig } from "@/lib/wedding-config";
 
 const WEDDING = {
-  brideFirst:  "Meera",
-  groomFirst:  "Ravi",
-  date:        "Dec 15, 2026",
-  tier:        "Premium",
+  brideFirst: weddingConfig.bride,
+  groomFirst: weddingConfig.groom,
+  date:       weddingConfig.displayDate,
+  tier:       weddingConfig.tier,
 };
 
 export default function DashboardLayout({
