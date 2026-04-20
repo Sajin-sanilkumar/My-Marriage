@@ -231,7 +231,6 @@ export default function ContentPage() {
   const [savingConfig, setSavingConfig] = useState(false);
   const [savingOg,     setSavingOg]     = useState(false);
   const [savingEvent,  setSavingEvent]  = useState(false);
-  const [syncing,      setSyncing]      = useState(false);
   const [deletingId,   setDeletingId]   = useState<string | null>(null);
 
   const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
@@ -313,14 +312,6 @@ export default function ContentPage() {
 
   useEffect(() => { fetchWedding(); }, [fetchWedding]);
 
-  const autoSync = async () => {
-    try {
-      await fetch(`/api/weddings/${WEDDING_SLUG}/sync`, { method: "POST" });
-    } catch {
-      // sync failure is non-blocking; user can still manually sync
-    }
-  };
-
   const saveInfo = async () => {
     setSavingInfo(true);
     try {
@@ -336,7 +327,6 @@ export default function ContentPage() {
       if (!res.ok) throw new Error();
       showToast("Wedding info saved!", "success");
       fetchWedding();
-      autoSync();
     } catch { showToast("Failed to save info", "error"); }
     finally { setSavingInfo(false); }
   };
@@ -362,7 +352,6 @@ export default function ContentPage() {
       if (!res.ok) throw new Error();
       showToast("Settings saved!", "success");
       fetchWedding();
-      autoSync();
     } catch { showToast("Failed to save settings", "error"); }
     finally { setSavingConfig(false); }
   };
@@ -381,7 +370,6 @@ export default function ContentPage() {
       if (!res.ok) throw new Error();
       showToast("OG settings saved!", "success");
       fetchWedding();
-      autoSync();
     } catch { showToast("Failed to save OG settings", "error"); }
     finally { setSavingOg(false); }
   };
@@ -397,23 +385,12 @@ export default function ContentPage() {
       if (!res.ok) throw new Error();
       showToast("Site configuration saved!", "success");
       fetchWedding();
-      autoSync();
     } catch { showToast("Failed to save site configuration", "error"); }
     finally { setSavingConfig(false); }
   };
 
-  const syncToInvite = async () => {
-    setSyncing(true);
-    try {
-      const res = await fetch(`/api/weddings/${WEDDING_SLUG}/sync`, { method: "POST" });
-      if (!res.ok) throw new Error();
-      const result = await res.json();
-      showToast(result.message ?? "Successfully synced to invite site!", "success");
-    } catch (err: any) {
-      showToast(err.message ?? "Failed to sync to invite site", "error");
-    } finally {
-      setSyncing(false);
-    }
+  const syncToInvite = () => {
+    showToast("Invite site is always live — changes appear instantly after saving.", "success");
   };
 
   const saveEvent = async (data: Omit<WeddingEvent, "id"> & { id?: string }) => {
@@ -433,7 +410,6 @@ export default function ContentPage() {
       setEditingEventId(null);
       setAddingEvent(false);
       fetchWedding();
-      autoSync();
     } catch { showToast("Failed to save event", "error"); }
     finally { setSavingEvent(false); }
   };
@@ -446,7 +422,6 @@ export default function ContentPage() {
       if (!res.ok && res.status !== 204) throw new Error();
       showToast("Event deleted", "success");
       fetchWedding();
-      autoSync();
     } catch { showToast("Failed to delete event", "error"); }
     finally { setDeletingId(null); }
   };
@@ -490,14 +465,13 @@ export default function ContentPage() {
           <h1 className="text-xl font-semibold text-zinc-900">Content</h1>
           <p className="text-sm text-zinc-500 mt-0.5">Manage all visible content for the invitation site.</p>
         </div>
-        <Button 
-          onClick={syncToInvite} 
-          disabled={syncing} 
+        <Button
+          onClick={syncToInvite}
           variant="default"
           className="bg-zinc-900 text-white hover:bg-zinc-800"
         >
-          {syncing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-          {syncing ? "Syncing..." : "Sync to Invite Site"}
+          <CheckCircle2 className="mr-2 h-4 w-4" />
+          Always Live
         </Button>
       </div>
 

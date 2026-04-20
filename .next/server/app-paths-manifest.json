@@ -1,9 +1,0 @@
-{
-  "/page": "app/page.js",
-  "/api/weddings/[slug]/analytics/route": "app/api/weddings/[slug]/analytics/route.js",
-  "/api/weddings/[slug]/route": "app/api/weddings/[slug]/route.js",
-  "/api/weddings/[slug]/sync/route": "app/api/weddings/[slug]/sync/route.js",
-  "/favicon.ico/route": "app/favicon.ico/route.js",
-  "/admin/page": "app/admin/page.js",
-  "/admin/content/page": "app/admin/content/page.js"
-}
