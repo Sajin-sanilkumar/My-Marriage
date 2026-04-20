@@ -3,7 +3,7 @@ import localFont from 'next/font/local';
 import { Cormorant_Garamond, Jost } from 'next/font/google';
 import { Toaster } from '@/components/ui/sonner';
 import { InviteLoadingGuard, InviteMusicGuard } from '@/components/invite-guards';
-import weddingData from '@/data/wedding.json';
+import { fetchWedding } from '@/lib/invite-api';
 import './globals.css';
 
 const geistSans = localFont({ src: './fonts/GeistVF.woff',     variable: '--font-geist-sans', weight: '100 900' });
@@ -24,30 +24,44 @@ const jost = Jost({
   display:  'swap',
 });
 
-const monogram = `${(weddingData as { bride: string }).bride[0]} & ${(weddingData as { groom: string }).groom[0]}`;
-
 export const viewport: Viewport = { themeColor: '#C9A84C' };
 
-export const metadata: Metadata = {
-  metadataBase: new URL(
-    process.env.NEXT_PUBLIC_BASE_URL ??
-    (process.env.VERCEL_PROJECT_PRODUCTION_URL
-      ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-      : process.env.VERCEL_URL
-        ? `https://${process.env.VERCEL_URL}`
-        : 'http://localhost:3000')
-  ),
-  title:       'Wedvite',
-  description: 'Wedding invitation & management platform',
-  robots:      { index: false, follow: false },
-};
+const BASE_URL =
+  process.env.NEXT_PUBLIC_BASE_URL ??
+  (process.env.VERCEL_PROJECT_PRODUCTION_URL
+    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+    : process.env.VERCEL_URL
+      ? `https://${process.env.VERCEL_URL}`
+      : 'http://localhost:3000');
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+export async function generateMetadata(): Promise<Metadata> {
+  const wedding = await fetchWedding(process.env.WEDDING_SLUG ?? '');
+  const site = (wedding?.site_config ?? {}) as Record<string, string>;
+  const title       = site.tab_title       ?? (wedding ? `${wedding.bride_name} & ${wedding.groom_name} — Wedding Invitation` : 'Wedding Invitation');
+  const description = site.tab_description ?? (wedding ? `You're invited to celebrate the wedding of ${wedding.bride_name} & ${wedding.groom_name}.` : '');
+
+  return {
+    metadataBase: new URL(BASE_URL),
+    title,
+    description,
+    robots: { index: false, follow: false },
+  };
+}
+
+export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  const wedding = await fetchWedding(process.env.WEDDING_SLUG ?? '');
+  const site = (wedding?.site_config ?? {}) as Record<string, string>;
+  const monogram = site.loading_monogram ?? (wedding ? `${wedding.bride_name[0]} & ${wedding.groom_name[0]}` : 'W');
+  const tagline  = site.loading_tagline;
+
+  const configJson = (wedding?.config_json ?? {}) as Record<string, unknown>;
+  const musicUrl   = configJson.backgroundMusic as string | undefined;
+
   return (
     <html lang="en" className="scroll-smooth">
       <body className={`${geistSans.variable} ${geistMono.variable} ${cormorant.variable} ${jost.variable} antialiased`}>
-        <InviteLoadingGuard monogram={monogram} />
-        <InviteMusicGuard>
+        <InviteLoadingGuard monogram={monogram} tagline={tagline} />
+        <InviteMusicGuard musicUrl={musicUrl}>
           {children}
         </InviteMusicGuard>
         <Toaster richColors closeButton position="bottom-right" />

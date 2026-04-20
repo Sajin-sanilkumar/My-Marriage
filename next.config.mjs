@@ -2,7 +2,10 @@
 const nextConfig = {
   // Allow both local and external image domains if needed
   images: {
-    remotePatterns: [],
+    remotePatterns: [
+      // Vercel Blob storage
+      { protocol: 'https', hostname: '*.public.blob.vercel-storage.com' },
+    ],
   },
 };
 

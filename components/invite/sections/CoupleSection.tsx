@@ -3,53 +3,52 @@
 import { useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
 
-// TODO: Replace all placeholder text and photo paths with real content
-
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
-const BRIDE = {
-  name: 'Keerthana',
-  role: 'Bride' as const,
-  initial: 'K',
-  hometown: 'Malappuram, Kerala',
-  profession: 'Software Engineer',
-  about:
-    'A gentle soul with a deep love for Carnatic music and Bharatanatyam. She brings warmth and grace to every room she enters, and has a beautiful gift for making everyone feel at home.',
-  hobbies: ['Classical Dance', 'Carnatic Music', 'Reading', 'Cooking'],
-};
+export interface CoupleSectionProps {
+  brideName: string;
+  groomName: string;
+  brideFamily?: string;
+  groomFamily?: string;
+  brideAbout?: string;
+  groomAbout?: string;
+  brideHometown?: string;
+  groomHometown?: string;
+  brideProfession?: string;
+  groomProfession?: string;
+  brideHobbies?: string;
+  groomHobbies?: string;
+  ourStory?: string;
+  bridePhoto?: string;
+  groomPhoto?: string;
+}
 
-const GROOM = {
-  name: 'Sajin',
-  role: 'Groom' as const,
-  initial: 'S',
-  hometown: 'Thrissur, Kerala',
-  profession: 'Civil Engineer',
-  about:
-    'An adventurous spirit who finds joy in the outdoors and captures the world through his camera lens. His warmth, laughter, and quiet strength make every moment feel special.',
-  hobbies: ['Photography', 'Cricket', 'Trekking', 'Travel'],
-};
+// ── Default Fallbacks ───────────────────────────────────────────────────
 
-const OUR_STORY =
-  "They first met through mutual friends in 2021, bonding over shared stories, filter coffee, and a love for Kerala's serene backwaters. What began as a warm friendship slowly blossomed into something beautiful — a bond built on laughter, trust, and countless cherished memories. On 26th April 2026, they take the most wonderful step of their journey together.";
+const DEFAULT_BRIDE_ABOUT = 'A gentle soul with a deep love for Carnatic music and Bharatanatyam. She brings warmth and grace to every room she enters, and has a beautiful gift for making everyone feel at home.';
+const DEFAULT_GROOM_ABOUT = 'An adventurous spirit who finds joy in the outdoors and captures the world through his camera lens. His warmth, laughter, and quiet strength make every moment feel special.';
+const DEFAULT_STORY = "They first met through mutual friends in 2021, bonding over shared stories, filter coffee, and a love for Kerala's serene backwaters. What began as a warm friendship slowly blossomed into something beautiful — a bond built on laughter, trust, and countless cherished memories.";
 
 // ---------------------------------------------------------------------------
-// PhotoPlaceholder
-// Replace the inner <div> with <Image> once real photos are available.
+// PhotoAvatar — shows uploaded photo or falls back to initial letter
 // ---------------------------------------------------------------------------
 
-function PhotoPlaceholder({
+function PhotoAvatar({
   initial,
   isBride,
+  photo,
+  name,
 }: {
   initial: string;
   isBride: boolean;
+  photo?: string;
+  name: string;
 }) {
   return (
     <div
       className="relative mx-auto"
       style={{ width: '168px', height: '168px' }}
     >
-      {/* Gold ring border */}
       <div
         className="absolute inset-0 rounded-full"
         style={{ padding: '2px', background: 'linear-gradient(135deg, #C9A84C 0%, #B8941F 40%, #D4B978 70%, #C9A84C 100%)' }}
@@ -57,28 +56,35 @@ function PhotoPlaceholder({
         <div className="w-full h-full rounded-full" style={{ background: '#FAF6F0' }} />
       </div>
 
-      {/* Portrait area — swap for <Image> when ready */}
-      <div
-        className="absolute inset-[6px] rounded-full flex flex-col items-center justify-center gap-1"
-        style={{
-          background: isBride
-            ? 'linear-gradient(160deg, #f6ede0 0%, #ecd8be 100%)'
-            : 'linear-gradient(160deg, #e8ede8 0%, #d0ddd0 100%)',
-        }}
-      >
-        <span
-          className="font-serif select-none"
-          style={{ fontSize: '62px', lineHeight: 1, color: 'rgba(160,115,40,0.28)' }}
-          aria-hidden="true"
+      {photo ? (
+        <div className="absolute inset-[3px] rounded-full overflow-hidden">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={photo}
+            alt={name}
+            loading="lazy"
+            className="w-full h-full object-cover"
+          />
+        </div>
+      ) : (
+        <div
+          className="absolute inset-[6px] rounded-full flex flex-col items-center justify-center gap-1"
+          style={{
+            background: isBride
+              ? 'linear-gradient(160deg, #f6ede0 0%, #ecd8be 100%)'
+              : 'linear-gradient(160deg, #e8ede8 0%, #d0ddd0 100%)',
+          }}
         >
-          {initial}
-        </span>
-        {/* TODO: Replace above with:
-          <Image src="/photos/bride.jpg" (or groom) alt="..." fill className="rounded-full object-cover" />
-        */}
-      </div>
+          <span
+            className="font-serif select-none"
+            style={{ fontSize: '62px', lineHeight: 1, color: 'rgba(160,115,40,0.28)' }}
+            aria-hidden="true"
+          >
+            {initial}
+          </span>
+        </div>
+      )}
 
-      {/* Small decorative dot at bottom of ring */}
       <div
         className="absolute bottom-[1px] left-1/2 -translate-x-1/2 rounded-full"
         style={{ width: '8px', height: '8px', background: '#C9A84C' }}
@@ -95,7 +101,17 @@ function PersonCard({
   person,
   delay,
 }: {
-  person: typeof BRIDE | typeof GROOM;
+  person: {
+    name: string;
+    family?: string;
+    role: 'Bride' | 'Groom';
+    initial: string;
+    photo?: string;
+    hometown?: string;
+    profession?: string;
+    about?: string;
+    hobbies: string[];
+  };
   delay: number;
 }) {
   const isBride = person.role === 'Bride';
@@ -109,9 +125,8 @@ function PersonCard({
       className="flex flex-col items-center gap-6 px-4"
       style={{ maxWidth: '340px', width: '100%' }}
     >
-      <PhotoPlaceholder initial={person.initial} isBride={isBride} />
+      <PhotoAvatar initial={person.initial} isBride={isBride} photo={person.photo} name={person.name} />
 
-      {/* Role badge */}
       <div className="flex flex-col items-center gap-1.5">
         <span
           className="font-sans text-[10px] uppercase tracking-[3px]"
@@ -125,14 +140,17 @@ function PersonCard({
         >
           {person.name}
         </h3>
-        {/* Thin gold rule */}
+        {person.family && (
+          <span className="font-sans text-[11px] text-warmgray mt-1 uppercase tracking-wider">
+            {person.family}
+          </span>
+        )}
         <div
-          className="rounded-full"
+          className="rounded-full mt-1.5"
           style={{ width: '36px', height: '1.5px', background: 'linear-gradient(90deg, transparent, #C9A84C, transparent)' }}
         />
       </div>
 
-      {/* Details */}
       <div className="flex flex-col items-center gap-1 text-center">
         <div className="flex items-center gap-2">
           <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
@@ -149,15 +167,15 @@ function PersonCard({
         </div>
       </div>
 
-      {/* About */}
-      <p
-        className="font-sans text-[13.5px] leading-relaxed text-center text-warmgray"
-        style={{ maxWidth: '280px' }}
-      >
-        {person.about}
-      </p>
+      {person.about && (
+        <p
+          className="font-sans text-[13.5px] leading-relaxed text-center text-warmgray"
+          style={{ maxWidth: '280px' }}
+        >
+          {person.about}
+        </p>
+      )}
 
-      {/* Hobby tags */}
       <div className="flex flex-wrap justify-center gap-2">
         {person.hobbies.map((h) => (
           <span
@@ -181,9 +199,49 @@ function PersonCard({
 // CoupleSection
 // ---------------------------------------------------------------------------
 
-export function CoupleSection() {
+export function CoupleSection({
+  brideName,
+  groomName,
+  brideFamily,
+  groomFamily,
+  brideAbout,
+  groomAbout,
+  brideHometown,
+  groomHometown,
+  brideProfession,
+  groomProfession,
+  brideHobbies,
+  groomHobbies,
+  ourStory,
+  bridePhoto,
+  groomPhoto,
+}: CoupleSectionProps) {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, margin: '-80px' });
+
+  const brideData = {
+    name: brideName,
+    family: brideFamily,
+    role: 'Bride' as const,
+    initial: brideName[0] || 'K',
+    photo: bridePhoto,
+    hometown: brideHometown || 'Kerala, India',
+    profession: brideProfession || 'Software Professional',
+    about: brideAbout || DEFAULT_BRIDE_ABOUT,
+    hobbies: brideHobbies ? brideHobbies.split(',').map((h) => h.trim()) : ['Music', 'Reading'],
+  };
+
+  const groomData = {
+    name: groomName,
+    family: groomFamily,
+    role: 'Groom' as const,
+    initial: groomName[0] || 'S',
+    photo: groomPhoto,
+    hometown: groomHometown || 'Kerala, India',
+    profession: groomProfession || 'Professional',
+    about: groomAbout || DEFAULT_GROOM_ABOUT,
+    hobbies: groomHobbies ? groomHobbies.split(',').map((h) => h.trim()) : ['Travel', 'Photography'],
+  };
 
   return (
     <section
@@ -192,7 +250,6 @@ export function CoupleSection() {
     >
       <div className="mx-auto px-5" style={{ maxWidth: '860px' }}>
 
-        {/* Heading */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
@@ -211,7 +268,6 @@ export function CoupleSection() {
           >
             The Couple
           </h2>
-          {/* Ornament */}
           <svg viewBox="0 0 120 18" width="90" height="14" fill="none" aria-hidden="true">
             <path d="M60 5 L64 9 L60 13 L56 9 Z" fill="#C9A84C" fillOpacity="0.6" />
             <path d="M56 9 C48 9 38 5 28 7 C20 8.5 12 11.5 4 9" stroke="#C9A84C" strokeOpacity="0.4" strokeWidth="0.8" />
@@ -221,11 +277,9 @@ export function CoupleSection() {
           </svg>
         </motion.div>
 
-        {/* Cards */}
         <div className="flex flex-col sm:flex-row items-center sm:items-start justify-center gap-12 sm:gap-6 md:gap-16">
-          <PersonCard person={BRIDE} delay={0.1} />
+          <PersonCard person={brideData} delay={0.1} />
 
-          {/* Divider (desktop) / ampersand */}
           <div className="hidden sm:flex flex-col items-center justify-center" style={{ paddingTop: '60px', minWidth: '40px' }}>
             <div className="h-16 w-px" style={{ background: 'linear-gradient(to bottom, transparent, rgba(184,148,31,0.3), transparent)' }} />
             <span
@@ -237,15 +291,13 @@ export function CoupleSection() {
             <div className="h-16 w-px" style={{ background: 'linear-gradient(to bottom, transparent, rgba(184,148,31,0.3), transparent)' }} />
           </div>
 
-          {/* Mobile ampersand */}
           <div className="flex sm:hidden">
             <span className="font-serif text-[32px]" style={{ color: 'rgba(184,148,31,0.35)' }}>&</span>
           </div>
 
-          <PersonCard person={GROOM} delay={0.25} />
+          <PersonCard person={groomData} delay={0.25} />
         </div>
 
-        {/* Our Story */}
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -253,7 +305,6 @@ export function CoupleSection() {
           transition={{ duration: 0.7, delay: 0.15, ease: EASE }}
           className="mt-16 flex flex-col items-center gap-5"
         >
-          {/* Section label */}
           <span
             className="font-sans text-[10px] uppercase tracking-[4px]"
             style={{ color: '#B8941F' }}
@@ -261,7 +312,6 @@ export function CoupleSection() {
             Our Story
           </span>
 
-          {/* Opening quote mark */}
           <div
             className="font-serif text-[64px] leading-none select-none"
             style={{ color: 'rgba(184,148,31,0.18)', marginBottom: '-16px' }}
@@ -274,10 +324,9 @@ export function CoupleSection() {
             className="font-serif text-[16px] sm:text-[17px] leading-relaxed text-center text-warmgray"
             style={{ maxWidth: '580px', fontStyle: 'italic', fontWeight: 300 }}
           >
-            {OUR_STORY}
+            {ourStory || DEFAULT_STORY}
           </p>
 
-          {/* Thin decorative rule */}
           <div
             className="rounded-full mt-2"
             style={{ width: '60px', height: '1px', background: 'linear-gradient(90deg, transparent, #C9A84C, transparent)' }}

@@ -47,7 +47,7 @@ type Analytics = {
   }[];
 };
 
-const WEDDING_SLUG = process.env.NEXT_PUBLIC_WEDDING_SLUG ?? "sajin-and-keerthan";
+const WEDDING_SLUG = process.env.NEXT_PUBLIC_WEDDING_SLUG ?? "sajin-and-keerthana";
 
 // ─── Dietary config ───────────────────────────────────────────────────────────
 

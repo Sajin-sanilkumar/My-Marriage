@@ -22,28 +22,30 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   if (!wedding || resolution.type === 'not_found') return {};
 
-  const og = wedding.og ?? {};
-  const image = og.image ?? '/og-image.jpg';
-  const images = [{ url: image, width: 953, height: 501, alt: `${wedding.bride_name} & ${wedding.groom_name}` }];
+  const og   = wedding.og ?? {};
+  const site = (wedding.site_config ?? {}) as Record<string, string>;
+  const image    = og.image ?? '/og-image.jpg';
+  const images   = [{ url: image, width: 953, height: 501, alt: `${wedding.bride_name} & ${wedding.groom_name}` }];
+  const tabTitle = site.tab_title ?? `${wedding.bride_name} & ${wedding.groom_name} — Wedding Invitation`;
 
-  let title: string;
+  let ogTitle: string;
   let description: string;
 
   if (resolution.type === 'personal') {
     const name = resolution.data.name;
-    title       = fill(og.title_personal       ?? `You're invited, {name}! 💌`, name);
+    ogTitle     = fill(og.title_personal       ?? `You're invited, {name}! 💌`, name);
     description = fill(og.description_personal ?? `Dear {name}, you are warmly invited to the wedding.`, name);
   } else {
     const name = resolution.data.name;
-    title       = fill(og.title_category       ?? `You're invited! 💌`, name);
+    ogTitle     = fill(og.title_category       ?? `You're invited! 💌`, name);
     description = fill(og.description_category ?? `You are warmly invited to the wedding.`, name);
   }
 
   return {
-    title,
+    title: tabTitle,
     description,
-    openGraph: { title, description, type: 'website', images },
-    twitter:   { card: 'summary_large_image', title, description, images: [image] },
+    openGraph: { title: ogTitle, description, type: 'website', images },
+    twitter:   { card: 'summary_large_image', title: ogTitle, description, images: [image] },
   };
 }
 

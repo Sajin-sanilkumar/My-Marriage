@@ -20,7 +20,7 @@ const FADE_DURATION_MS = 2000;
 const FADE_STEP_MS = 50;
 const UNLOCK_EVENTS = ['click', 'touchstart'] as const;
 
-export function MusicProvider({ children }: { children: React.ReactNode }) {
+export function MusicProvider({ children, url }: { children: React.ReactNode; url?: string }) {
   const audioRef         = useRef<HTMLAudioElement | null>(null);
   const fadeTimerRef     = useRef<ReturnType<typeof setInterval> | null>(null);
   const isStartingRef    = useRef(false);
@@ -30,14 +30,21 @@ export function MusicProvider({ children }: { children: React.ReactNode }) {
   const [isMuted,   setIsMuted]   = useState(false);
 
   useEffect(() => {
-    const audio = new Audio('/music/wedding-bg.mp3');
+    // If url is provided and starts with /uploads, use it. Otherwise fallback to default.
+    let musicSrc = '/music/wedding-bg.mp3';
+    if (url && url.startsWith('/uploads/')) {
+      musicSrc = url;
+    } else if (url) {
+      musicSrc = url;
+    }
+    const audio = new Audio(musicSrc);
     audio.loop = true;
     audio.volume = 0;
     audio.preload = 'auto';
     audio.addEventListener('error', () => {});
     audioRef.current = audio;
     return () => { audio.pause(); audio.src = ''; };
-  }, []);
+  }, [url]);
 
   const removeUnlockListeners = useCallback(() => {
     if (unlockHandlerRef.current) {

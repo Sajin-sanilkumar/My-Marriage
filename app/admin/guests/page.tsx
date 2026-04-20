@@ -57,7 +57,7 @@ type ParsedRow = {
   _error?: string;
 };
 
-const WEDDING_SLUG = "ravi-and-meera";
+const WEDDING_SLUG = process.env.NEXT_PUBLIC_WEDDING_SLUG || "ravi-and-meera";
 const PAGE_SIZE    = 50;
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────

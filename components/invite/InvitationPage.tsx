@@ -79,6 +79,10 @@ export function InvitationPage({ wedding, events, linkType, categoryId, guestId,
   const configJson = wedding.config_json ?? {};
   const hashtag = (configJson.hashtag as string | undefined) ?? `#${wedding.bride_name.replace(/\s+/g, '')}Weds${wedding.groom_name.replace(/\s+/g, '')}`;
   const countdownTo = configJson.countdown_to as string | undefined;
+  const showRsvpForm = configJson.showRsvpForm !== false;
+  const coverPhoto = configJson.coverPhoto as string | null | undefined;
+  const bridePhoto = configJson.bridePhoto as string | undefined;
+  const groomPhoto = configJson.groomPhoto as string | undefined;
   const ceremonyName = events[0]?.name;
 
   const shareUrl = typeof window !== 'undefined' ? window.location.href : '';
@@ -88,16 +92,34 @@ export function InvitationPage({ wedding, events, linkType, categoryId, guestId,
 
   return (
     <motion.main initial={{ opacity: 0.7 }} animate={{ opacity: curtainUp ? 1 : 0.7 }} transition={{ duration: 0.4, ease: EASE }}>
-      <HeroSection brideName={wedding.bride_name} groomName={wedding.groom_name} brideFamily={wedding.bride_family} groomFamily={wedding.groom_family} date={wedding.wedding_date} venue={primaryVenueName} guestName={guestName} tagline={tagline} onScrollDown={scrollToTimeline} />
+      <HeroSection brideName={wedding.bride_name} groomName={wedding.groom_name} date={wedding.wedding_date} venue={primaryVenueName} guestName={guestName} tagline={tagline} onScrollDown={scrollToTimeline} coverPhoto={coverPhoto} />
       <SectionDivider from={BG_HERO} to={BG_CREAM} />
-      <CoupleSection />
+      <CoupleSection
+        brideName={wedding.bride_name}
+        groomName={wedding.groom_name}
+        brideFamily={wedding.bride_family}
+        groomFamily={wedding.groom_family}
+        brideAbout={wedding.bride_about}
+        groomAbout={wedding.groom_about}
+        brideHometown={wedding.bride_hometown}
+        groomHometown={wedding.groom_hometown}
+        brideProfession={wedding.bride_profession}
+        groomProfession={wedding.groom_profession}
+        brideHobbies={wedding.bride_hobbies}
+        groomHobbies={wedding.groom_hobbies}
+        ourStory={wedding.our_story}
+        bridePhoto={bridePhoto}
+        groomPhoto={groomPhoto}
+      />
       <SectionDivider from={BG_CREAM} to={BG_CREAM} />
       {countdownTo && <CountdownSection countdownTo={countdownTo} eventName={ceremonyName} />}
       <SectionDivider from={BG_CREAM} to={BG_WHITE} />
       <div ref={timelineRef}><EventTimeline events={events} /></div>
-      <SectionDivider from={BG_WHITE} to={BG_CHARCOAL} />
-      <RsvpSection events={rsvpEvents} linkType={linkType} categoryId={categoryId} guestId={guestId} guestName={guestName} weddingSlug={wedding.slug} />
-      <SectionDivider from={BG_CHARCOAL} to={BG_CREAM} />
+      {showRsvpForm && <SectionDivider from={BG_WHITE} to={BG_CHARCOAL} />}
+      {showRsvpForm && (
+        <RsvpSection events={rsvpEvents} linkType={linkType} categoryId={categoryId} guestId={guestId} guestName={guestName} weddingSlug={wedding.slug} />
+      )}
+      <SectionDivider from={showRsvpForm ? BG_CHARCOAL : BG_WHITE} to={BG_CREAM} />
       <VenueSection events={events} />
       <SectionDivider from={BG_CREAM} to={BG_CHARCOAL} />
       <FooterSection hashtag={hashtag} shareMessage={shareMessage} shareUrl={shareUrl} />

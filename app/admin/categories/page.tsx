@@ -36,7 +36,7 @@ type FormState = {
   whatsapp_message_template: string;
 };
 
-const WEDDING_SLUG = "ravi-and-meera";
+const WEDDING_SLUG = process.env.NEXT_PUBLIC_WEDDING_SLUG || "ravi-and-meera";
 
 const DEFAULT_TEMPLATE =
   `🎉 {groom} & {bride} cordially invite you!\n📅 {date}\n\nSee all details & RSVP here 👇\n{url}\n\nPlease confirm your attendance 🙏`;

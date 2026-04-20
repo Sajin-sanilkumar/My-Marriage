@@ -20,8 +20,11 @@ export interface RsvpSectionProps {
   weddingSlug: string;
 }
 
-const DIETARY_OPTIONS = ['Veg', 'Non-Veg'] as const;
-type DietaryOption = (typeof DIETARY_OPTIONS)[number];
+const DIETARY_OPTIONS = [
+  { display: 'Veg', value: 'VEG' },
+  { display: 'Non-Veg', value: 'NON_VEG' },
+] as const;
+type DietaryOption = (typeof DIETARY_OPTIONS)[number]['value'];
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
@@ -134,6 +137,7 @@ export function RsvpSection({ events, linkType, categoryId, guestId, guestName, 
     let valid = true;
     if (!isPersonalLink && !name.trim()) { setNameError('Please enter your name'); valid = false; }
     if (!Object.values(selectedEvents).some(Boolean)) { setEventsError('Please select at least one event'); valid = false; }
+    if (!dietary) { setSubmitError('Please select a dietary preference'); valid = false; }
     return valid;
   };
 
@@ -147,12 +151,12 @@ export function RsvpSection({ events, linkType, categoryId, guestId, guestName, 
     const res = await submitRsvp(weddingSlug, {
       name: displayName.trim(),
       phone: phone.trim() || undefined,
-      events: Object.entries(selectedEvents).filter(([, v]) => v).map(([id]) => ({ event_id: id, guest_count: guestCounts[id] ?? 1 })),
-      dietary_preference: dietary || undefined,
-      needs_transport: needsTransport,
+      event_selections: Object.entries(selectedEvents).filter(([, v]) => v).map(([id]) => ({ event_id: id, attending: true, guest_count: guestCounts[id] ?? 1 })),
+      dietary_preference: dietary,
+      transport_needed: needsTransport,
       message: message.trim() || undefined,
-      link_type: linkType,
-      category_id: categoryId,
+      source_type: linkType,
+      source_category_id: categoryId,
       guest_id: guestId,
     });
     setIsSubmitting(false);
@@ -267,9 +271,9 @@ export function RsvpSection({ events, linkType, categoryId, guestId, guestName, 
                   <label className="font-sans text-[12px] uppercase text-gold-300/70" style={{ letterSpacing: '2px' }}>Dietary Preference</label>
                   <div className="flex flex-wrap gap-2">
                     {DIETARY_OPTIONS.map((opt) => (
-                      <motion.button key={opt} type="button" onClick={() => setDietary((p) => (p === opt ? '' : opt))} whileTap={{ scale: 0.95 }} transition={{ type: 'spring', stiffness: 400, damping: 17 }}
-                        className={`min-h-[44px] rounded-[3px] border px-3 py-2 font-sans text-[13px] transition-all duration-300 ${dietary === opt ? 'border-gold-400 bg-gold-500/20 text-cream' : 'border-gold-700 text-cream/65 hover:border-gold-500 hover:text-cream/85'}`}>
-                        {opt}
+                      <motion.button key={opt.value} type="button" onClick={() => setDietary((p) => (p === opt.value ? '' : opt.value))} whileTap={{ scale: 0.95 }} transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+                        className={`min-h-[44px] rounded-[3px] border px-3 py-2 font-sans text-[13px] transition-all duration-300 ${dietary === opt.value ? 'border-gold-400 bg-gold-500/20 text-cream' : 'border-gold-700 text-cream/65 hover:border-gold-500 hover:text-cream/85'}`}>
+                        {opt.display}
                       </motion.button>
                     ))}
                   </div>

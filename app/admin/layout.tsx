@@ -1,3 +1,5 @@
+"use client";
+
 import { SidebarNav, MobileNav } from "@/components/dashboard/sidebar-nav";
 import { Badge } from "@/components/ui/badge";
 import { CalendarDays, Heart } from "lucide-react";
@@ -59,6 +61,15 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <span className="text-sm text-zinc-500">{WEDDING.date}</span>
           </div>
           <div className="flex items-center gap-2">
+            <button
+              onClick={() => {
+                document.cookie = 'auth=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+                window.location.href = '/login';
+              }}
+              className="text-sm text-zinc-500 hover:text-zinc-700"
+            >
+              Logout
+            </button>
             <div className="h-7 w-7 rounded-full bg-zinc-200 flex items-center justify-center">
               <span className="text-xs font-semibold text-zinc-600">A</span>
             </div>

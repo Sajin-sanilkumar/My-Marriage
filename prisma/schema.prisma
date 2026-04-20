@@ -36,6 +36,16 @@ model Wedding {
   partner_id       String?
   is_active        Boolean     @default(true)
   config_json      Json
+  site_config      Json        @default("{}")
+  bride_about      String?
+  groom_about      String?
+  bride_hometown   String?
+  groom_hometown   String?
+  bride_profession String?
+  groom_profession String?
+  bride_hobbies    String?
+  groom_hobbies    String?
+  our_story        String?     @db.Text
   created_at       DateTime    @default(now())
   updated_at       DateTime    @updatedAt
   categories       Category[]

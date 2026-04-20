@@ -17,11 +17,11 @@ export function InviteLoadingGuard({ monogram, tagline }: { monogram: string; ta
   return <LoadingScreen monogram={monogram} tagline={tagline} />;
 }
 
-export function InviteMusicGuard({ children }: { children: React.ReactNode }) {
+export function InviteMusicGuard({ children, musicUrl }: { children: React.ReactNode; musicUrl?: string }) {
   const pathname = usePathname();
   if (isAdminPath(pathname)) return <>{children}</>;
   return (
-    <MusicProvider>
+    <MusicProvider url={musicUrl}>
       {children}
       <MusicToggle />
     </MusicProvider>

@@ -12,9 +12,16 @@ function toCategorySlug(name: string): string {
     .replace(/^-|-$/g, "");
 }
 
-function buildInviteUrl(weddingSlug: string, categorySlug: string): string {
-  const base = (process.env.INVITE_BASE_URL ?? "").replace(/\/$/, "");
-  return `${base}/invite/${weddingSlug}/${categorySlug}`;
+function siteBase(): string {
+  return (
+    process.env.NEXT_PUBLIC_BASE_URL ??
+    (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` :
+     process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000")
+  ).replace(/\/$/, "");
+}
+
+function buildInviteUrl(_weddingSlug: string, categorySlug: string): string {
+  return `${siteBase()}/${categorySlug}`;
 }
 
 // POST /api/weddings/[slug]/categories

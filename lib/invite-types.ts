@@ -44,7 +44,17 @@ export interface Wedding {
   groom_family?: string;
   wedding_date: string;
   greeting_default?: string;
+  bride_about?: string;
+  groom_about?: string;
+  bride_hometown?: string;
+  groom_hometown?: string;
+  bride_profession?: string;
+  groom_profession?: string;
+  bride_hobbies?: string;
+  groom_hobbies?: string;
+  our_story?: string;
   theme?: string;
+  site_config?: Record<string, unknown>;
   og?: WeddingOg;
   config_json?: Record<string, unknown>;
   events: WeddingEvent[];

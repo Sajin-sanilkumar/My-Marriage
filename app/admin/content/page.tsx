@@ -7,9 +7,11 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { ImageUpload } from "@/components/dashboard/ImageUpload";
+import { AudioUpload } from "@/components/dashboard/AudioUpload";
 import { cn } from "@/lib/utils";
 
-const WEDDING_SLUG = process.env.NEXT_PUBLIC_WEDDING_SLUG ?? "sajin-and-keerthan";
+const WEDDING_SLUG = process.env.NEXT_PUBLIC_WEDDING_SLUG ?? "sajin-and-keerthana";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -37,6 +39,16 @@ interface WeddingData {
   wedding_date: string;
   greeting_default: string;
   config_json: Record<string, unknown>;
+  site_config?: Record<string, unknown>;
+  bride_about: string | null;
+  groom_about: string | null;
+  bride_hometown: string | null;
+  groom_hometown: string | null;
+  bride_profession: string | null;
+  groom_profession: string | null;
+  bride_hobbies: string | null;
+  groom_hobbies: string | null;
+  our_story: string | null;
   events: WeddingEvent[];
 }
 
@@ -44,6 +56,29 @@ interface WeddingData {
 
 function toDateInputValue(iso: string) {
   return iso ? iso.slice(0, 10) : "";
+}
+
+function toTimeInputValue(timeStr: string): string {
+  if (!timeStr) return "";
+  // If already in HH:MM format, return as-is
+  if (timeStr.match(/^\d{1,2}:\d{2}$/)) return timeStr;
+  // Convert from "10:00 AM" to "10:00"
+  const match = timeStr.match(/(\d{1,2}):(\d{2})\s*(AM|PM)/i);
+  if (!match) return "";
+  let [, h, m, ampm] = match;
+  let hour = parseInt(h, 10);
+  if (ampm.toUpperCase() === "PM" && hour !== 12) hour += 12;
+  if (ampm.toUpperCase() === "AM" && hour === 12) hour = 0;
+  return `${String(hour).padStart(2, "0")}:${m}`;
+}
+
+function toStorageTimeValue(timeStr: string): string {
+  if (!timeStr) return "";
+  // timeStr is in HH:MM format (24-hour) from input type="time"
+  const [h, m] = timeStr.split(":").map(Number);
+  const ampm = h >= 12 ? "PM" : "AM";
+  const hour = h % 12 || 12;
+  return `${hour}:${String(m).padStart(2, "0")} ${ampm}`;
 }
 
 function Field({
@@ -149,10 +184,10 @@ function EventForm({
           <Input id="ev-date" type="date" value={toDateInputValue(form.date)} onChange={(e) => set("date", e.target.value)} />
         </Field>
         <Field label="Start Time" id="ev-start">
-          <Input id="ev-start" value={form.start_time} onChange={(e) => set("start_time", e.target.value)} placeholder="e.g. 10:00 AM" />
+          <Input id="ev-start" type="time" value={toTimeInputValue(form.start_time)} onChange={(e) => set("start_time", toStorageTimeValue(e.target.value))} />
         </Field>
         <Field label="End Time" id="ev-end" hint="Optional">
-          <Input id="ev-end" value={form.end_time ?? ""} onChange={(e) => set("end_time", e.target.value)} placeholder="e.g. 1:00 PM" />
+          <Input id="ev-end" type="time" value={toTimeInputValue(form.end_time ?? "")} onChange={(e) => set("end_time", e.target.value ? toStorageTimeValue(e.target.value) : "")} />
         </Field>
         <Field label="Venue Name" id="ev-vname">
           <Input id="ev-vname" value={form.venue_name} onChange={(e) => set("venue_name", e.target.value)} placeholder="e.g. St. Mary's Church" />
@@ -196,6 +231,7 @@ export default function ContentPage() {
   const [savingConfig, setSavingConfig] = useState(false);
   const [savingOg,     setSavingOg]     = useState(false);
   const [savingEvent,  setSavingEvent]  = useState(false);
+  const [syncing,      setSyncing]      = useState(false);
   const [deletingId,   setDeletingId]   = useState<string | null>(null);
 
   const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
@@ -203,6 +239,7 @@ export default function ContentPage() {
   const [infoForm,   setInfoForm]   = useState<Partial<WeddingData>>({});
   const [configForm, setConfigForm] = useState<Record<string, string>>({});
   const [ogForm,     setOgForm]     = useState<Record<string, string>>({});
+  const [siteForm,   setSiteForm]   = useState<Record<string, string>>({});
 
   const [editingEventId, setEditingEventId] = useState<string | null>(null);
   const [addingEvent,    setAddingEvent]    = useState(false);
@@ -227,6 +264,15 @@ export default function ContentPage() {
         groom_family:     data.groom_family,
         wedding_date:     data.wedding_date,
         greeting_default: data.greeting_default,
+        bride_about:      data.bride_about      ?? "",
+        groom_about:      data.groom_about      ?? "",
+        bride_hometown:   data.bride_hometown   ?? "",
+        groom_hometown:   data.groom_hometown   ?? "",
+        bride_profession: data.bride_profession ?? "",
+        groom_profession: data.groom_profession ?? "",
+        bride_hobbies:    data.bride_hobbies    ?? "",
+        groom_hobbies:    data.groom_hobbies    ?? "",
+        our_story:        data.our_story        ?? "",
       });
 
       const cfg = (data.config_json ?? {}) as Record<string, unknown>;
@@ -235,7 +281,9 @@ export default function ContentPage() {
         countdown_to: String(cfg.countdown_to ?? ""),
         primaryColor: String(cfg.primaryColor ?? "#C9A84C"),
         showRsvpForm: String(cfg.showRsvpForm ?? "true"),
-        coverPhoto:   String(cfg.coverPhoto   ?? ""),
+        bridePhoto:   String(cfg.bridePhoto   ?? ""),
+        groomPhoto:   String(cfg.groomPhoto   ?? ""),
+        backgroundMusic: String(cfg.backgroundMusic ?? ""),
       });
 
       const og = (cfg.og ?? {}) as Record<string, unknown>;
@@ -248,6 +296,14 @@ export default function ContentPage() {
         title_category:        String(og.title_category        ?? ""),
         description_category:  String(og.description_category  ?? ""),
       });
+      
+      const sc = (data.site_config ?? {}) as Record<string, unknown>;
+      setSiteForm({
+        tab_title:        String(sc.tab_title        ?? ""),
+        tab_description:  String(sc.tab_description  ?? ""),
+        loading_monogram: String(sc.loading_monogram ?? ""),
+        loading_tagline:  String(sc.loading_tagline  ?? ""),
+      });
     } catch {
       showToast("Failed to load wedding data", "error");
     } finally {
@@ -257,16 +313,30 @@ export default function ContentPage() {
 
   useEffect(() => { fetchWedding(); }, [fetchWedding]);
 
+  const autoSync = async () => {
+    try {
+      await fetch(`/api/weddings/${WEDDING_SLUG}/sync`, { method: "POST" });
+    } catch {
+      // sync failure is non-blocking; user can still manually sync
+    }
+  };
+
   const saveInfo = async () => {
     setSavingInfo(true);
     try {
+      const updatedConfig = {
+        ...(wedding?.config_json ?? {}),
+        bridePhoto: configForm.bridePhoto || null,
+        groomPhoto: configForm.groomPhoto || null,
+      };
       const res = await fetch(`/api/weddings/${WEDDING_SLUG}`, {
         method: "PUT", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(infoForm),
+        body: JSON.stringify({ ...infoForm, config_json: updatedConfig }),
       });
       if (!res.ok) throw new Error();
       showToast("Wedding info saved!", "success");
       fetchWedding();
+      autoSync();
     } catch { showToast("Failed to save info", "error"); }
     finally { setSavingInfo(false); }
   };
@@ -280,7 +350,10 @@ export default function ContentPage() {
         countdown_to: configForm.countdown_to || undefined,
         primaryColor: configForm.primaryColor || "#C9A84C",
         showRsvpForm: configForm.showRsvpForm === "true",
-        coverPhoto:   configForm.coverPhoto   || null,
+        coverPhoto:      configForm.coverPhoto      || null,
+        bridePhoto:      configForm.bridePhoto      || null,
+        groomPhoto:      configForm.groomPhoto      || null,
+        backgroundMusic: configForm.backgroundMusic || null,
       };
       const res = await fetch(`/api/weddings/${WEDDING_SLUG}`, {
         method: "PUT", headers: { "Content-Type": "application/json" },
@@ -289,6 +362,7 @@ export default function ContentPage() {
       if (!res.ok) throw new Error();
       showToast("Settings saved!", "success");
       fetchWedding();
+      autoSync();
     } catch { showToast("Failed to save settings", "error"); }
     finally { setSavingConfig(false); }
   };
@@ -307,8 +381,39 @@ export default function ContentPage() {
       if (!res.ok) throw new Error();
       showToast("OG settings saved!", "success");
       fetchWedding();
+      autoSync();
     } catch { showToast("Failed to save OG settings", "error"); }
     finally { setSavingOg(false); }
+  };
+
+  const saveSiteConfig = async () => {
+    if (!wedding) return;
+    setSavingConfig(true);
+    try {
+      const res = await fetch(`/api/weddings/${WEDDING_SLUG}`, {
+        method: "PUT", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ site_config: siteForm }),
+      });
+      if (!res.ok) throw new Error();
+      showToast("Site configuration saved!", "success");
+      fetchWedding();
+      autoSync();
+    } catch { showToast("Failed to save site configuration", "error"); }
+    finally { setSavingConfig(false); }
+  };
+
+  const syncToInvite = async () => {
+    setSyncing(true);
+    try {
+      const res = await fetch(`/api/weddings/${WEDDING_SLUG}/sync`, { method: "POST" });
+      if (!res.ok) throw new Error();
+      const result = await res.json();
+      showToast(result.message ?? "Successfully synced to invite site!", "success");
+    } catch (err: any) {
+      showToast(err.message ?? "Failed to sync to invite site", "error");
+    } finally {
+      setSyncing(false);
+    }
   };
 
   const saveEvent = async (data: Omit<WeddingEvent, "id"> & { id?: string }) => {
@@ -328,6 +433,7 @@ export default function ContentPage() {
       setEditingEventId(null);
       setAddingEvent(false);
       fetchWedding();
+      autoSync();
     } catch { showToast("Failed to save event", "error"); }
     finally { setSavingEvent(false); }
   };
@@ -340,6 +446,7 @@ export default function ContentPage() {
       if (!res.ok && res.status !== 204) throw new Error();
       showToast("Event deleted", "success");
       fetchWedding();
+      autoSync();
     } catch { showToast("Failed to delete event", "error"); }
     finally { setDeletingId(null); }
   };
@@ -378,9 +485,20 @@ export default function ContentPage() {
       {toast && <Toast {...toast} />}
 
       {/* Page header */}
-      <div>
-        <h1 className="text-xl font-semibold text-zinc-900">Content</h1>
-        <p className="text-sm text-zinc-500 mt-0.5">Manage all visible content for the invitation site.</p>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-xl font-semibold text-zinc-900">Content</h1>
+          <p className="text-sm text-zinc-500 mt-0.5">Manage all visible content for the invitation site.</p>
+        </div>
+        <Button 
+          onClick={syncToInvite} 
+          disabled={syncing} 
+          variant="default"
+          className="bg-zinc-900 text-white hover:bg-zinc-800"
+        >
+          {syncing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+          {syncing ? "Syncing..." : "Sync to Invite Site"}
+        </Button>
       </div>
 
       {/* ── Wedding Info ────────────────────────────────────────────────────── */}
@@ -421,6 +539,93 @@ export default function ContentPage() {
             placeholder="e.g. You're warmly invited to celebrate with us" />
         </Field>
         <SaveRow onClick={saveInfo} saving={savingInfo} label="Save Wedding Info" />
+      </SectionCard>
+
+      {/* ── About the Couple ────────────────────────────────────────────────── */}
+      <SectionCard
+        title="About the Couple"
+        description="Write a little about the bride and groom for the 'Meet the Couple' section."
+      >
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* Bride Column */}
+          <div className="space-y-4">
+            <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">The Bride</p>
+            <Field label="Photo" hint="Shown as profile picture — square or portrait works best">
+              <ImageUpload
+                value={configForm.bridePhoto}
+                onChange={(url) => setConfigForm(p => ({ ...p, bridePhoto: url }))}
+              />
+            </Field>
+            <Field label="About" id="bride-about">
+              <textarea id="bride-about" value={infoForm.bride_about ?? ""} 
+                onChange={(e) => setInfoForm(p => ({ ...p, bride_about: e.target.value }))}
+                className="flex min-h-[100px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                placeholder="A gentle soul with a deep love for..." />
+            </Field>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <Field label="Hometown" id="bride-town">
+                <Input id="bride-town" value={infoForm.bride_hometown ?? ""}
+                  onChange={(e) => setInfoForm(p => ({ ...p, bride_hometown: e.target.value }))}
+                  placeholder="e.g. Malappuram, Kerala" />
+              </Field>
+              <Field label="Profession" id="bride-prof">
+                <Input id="bride-prof" value={infoForm.bride_profession ?? ""}
+                  onChange={(e) => setInfoForm(p => ({ ...p, bride_profession: e.target.value }))}
+                  placeholder="e.g. Software Engineer" />
+              </Field>
+            </div>
+            <Field label="Hobbies" id="bride-hobbies" hint="Comma-separated values">
+              <Input id="bride-hobbies" value={infoForm.bride_hobbies ?? ""}
+                onChange={(e) => setInfoForm(p => ({ ...p, bride_hobbies: e.target.value }))}
+                placeholder="Dance, Music, Reading" />
+            </Field>
+          </div>
+
+          {/* Groom Column */}
+          <div className="space-y-4">
+            <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">The Groom</p>
+            <Field label="Photo" hint="Shown as profile picture — square or portrait works best">
+              <ImageUpload
+                value={configForm.groomPhoto}
+                onChange={(url) => setConfigForm(p => ({ ...p, groomPhoto: url }))}
+              />
+            </Field>
+            <Field label="About" id="groom-about">
+              <textarea id="groom-about" value={infoForm.groom_about ?? ""}
+                onChange={(e) => setInfoForm(p => ({ ...p, groom_about: e.target.value }))}
+                className="flex min-h-[100px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                placeholder="An adventurous spirit who finds joy..." />
+            </Field>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <Field label="Hometown" id="groom-town">
+                <Input id="groom-town" value={infoForm.groom_hometown ?? ""}
+                  onChange={(e) => setInfoForm(p => ({ ...p, groom_hometown: e.target.value }))}
+                  placeholder="e.g. Thrissur, Kerala" />
+              </Field>
+              <Field label="Profession" id="groom-prof">
+                <Input id="groom-prof" value={infoForm.groom_profession ?? ""}
+                  onChange={(e) => setInfoForm(p => ({ ...p, groom_profession: e.target.value }))}
+                  placeholder="e.g. Civil Engineer" />
+              </Field>
+            </div>
+            <Field label="Hobbies" id="groom-hobbies" hint="Comma-separated values">
+              <Input id="groom-hobbies" value={infoForm.groom_hobbies ?? ""}
+                onChange={(e) => setInfoForm(p => ({ ...p, groom_hobbies: e.target.value }))}
+                placeholder="Photography, Cricket, Travel" />
+            </Field>
+          </div>
+        </div>
+        
+        <div className="pt-4 border-t border-zinc-100">
+          <Field label="Our Story" id="our-story" hint="The narrative of how you met">
+            <textarea id="our-story" value={infoForm.our_story ?? ""}
+              onChange={(e) => setInfoForm(p => ({ ...p, our_story: e.target.value }))}
+              className="flex min-h-[120px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+              placeholder="They first met through mutual friends..." />
+          </Field>
+        </div>
+        
+        <SaveRow onClick={saveInfo} saving={savingInfo} label="Save Couple Info" />
       </SectionCard>
 
       {/* ── Events ──────────────────────────────────────────────────────────── */}
@@ -529,10 +734,19 @@ export default function ContentPage() {
             </div>
           </Field>
         </div>
-        <Field label="Cover Photo URL" id="cover-photo" hint="Optional — hero background image">
-          <Input id="cover-photo" value={configForm.coverPhoto}
-            onChange={(e) => setConfigForm((p) => ({ ...p, coverPhoto: e.target.value }))}
-            placeholder="https://..." />
+        <Field label="Cover Photo" hint="Optional — hero background image">
+          <ImageUpload
+            value={configForm.coverPhoto}
+            onChange={(url) => setConfigForm((p) => ({ ...p, coverPhoto: url }))}
+            hint="Recommended: landscape, min 1920×1080 px"
+          />
+        </Field>
+        <Field label="Background Music" hint="Optional — plays automatically on the invitation site">
+          <AudioUpload
+            value={configForm.backgroundMusic}
+            onChange={(url) => setConfigForm((p) => ({ ...p, backgroundMusic: url }))}
+            hint="Recommended: MP3 format, optimized for web"
+          />
         </Field>
         <SaveRow onClick={saveConfig} saving={savingConfig} label="Save Settings" />
       </SectionCard>
@@ -542,10 +756,12 @@ export default function ContentPage() {
         title="SEO / OG"
         description={`Controls link previews on WhatsApp, Instagram, etc. Use {name} to insert the guest's name.`}
       >
-        <Field label="OG Image URL" id="og-image" hint="Recommended size: 953 × 501 px">
-          <Input id="og-image" value={ogForm.image}
-            onChange={(e) => setOgForm((p) => ({ ...p, image: e.target.value }))}
-            placeholder="/og-image.jpg" />
+        <Field label="OG Image" hint="Recommended size: 953 × 501 px">
+          <ImageUpload
+            value={ogForm.image}
+            onChange={(url) => setOgForm((p) => ({ ...p, image: url }))}
+            hint="Recommended: 953 × 501 px (shown on WhatsApp/social previews)"
+          />
         </Field>
 
         <div className="space-y-3 pt-1">
@@ -603,6 +819,36 @@ export default function ContentPage() {
         </div>
 
         <SaveRow onClick={saveOg} saving={savingOg} label="Save OG Settings" />
+      </SectionCard>
+
+      {/* ── Global Site Configuration ────────────────────────────────────────── */}
+      <SectionCard 
+        title="Global Site Settings"
+        description="Browser tab titles, descriptions and loading screen branding."
+      >
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <Field label="Tab Title" id="tab-title" hint="Shows in the browser tab">
+            <Input id="tab-title" value={siteForm.tab_title}
+              onChange={(e) => setSiteForm(p => ({ ...p, tab_title: e.target.value }))}
+              placeholder="Bride & Groom — Wedding Invitation" />
+          </Field>
+          <Field label="Tab Description" id="tab-desc" hint="Meta description for SEO">
+            <Input id="tab-desc" value={siteForm.tab_description}
+              onChange={(e) => setSiteForm(p => ({ ...p, tab_description: e.target.value }))}
+              placeholder="You're invited to celebrate..." />
+          </Field>
+          <Field label="Loading Monogram" id="loading-monogram" hint="Large letters on the preloader">
+            <Input id="loading-monogram" value={siteForm.loading_monogram}
+              onChange={(e) => setSiteForm(p => ({ ...p, loading_monogram: e.target.value }))}
+              placeholder="B & G" />
+          </Field>
+          <Field label="Loading Tagline" id="loading-tagline" hint="Text below the monogram">
+            <Input id="loading-tagline" value={siteForm.loading_tagline}
+              onChange={(e) => setSiteForm(p => ({ ...p, loading_tagline: e.target.value }))}
+              placeholder="Loading your invitation..." />
+          </Field>
+        </div>
+        <SaveRow onClick={saveSiteConfig} saving={savingConfig} label="Save Site Settings" />
       </SectionCard>
     </div>
   );

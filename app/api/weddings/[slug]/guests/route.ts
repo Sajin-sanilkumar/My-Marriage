@@ -13,9 +13,16 @@ function toGuestSlug(name: string): string {
     .replace(/^-|-$/g, "");
 }
 
-function buildPersonalUrl(weddingSlug: string, guestSlug: string): string {
-  const base = (process.env.INVITE_BASE_URL ?? "").replace(/\/$/, "");
-  return `${base}/invite/${weddingSlug}/guest/${guestSlug}`;
+function siteBase(): string {
+  return (
+    process.env.NEXT_PUBLIC_BASE_URL ??
+    (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` :
+     process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000")
+  ).replace(/\/$/, "");
+}
+
+function buildPersonalUrl(_weddingSlug: string, guestSlug: string): string {
+  return `${siteBase()}/${guestSlug}`;
 }
 
 // POST /api/weddings/[slug]/guests

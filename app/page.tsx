@@ -9,16 +9,18 @@ export async function generateMetadata(): Promise<Metadata> {
   const wedding = await fetchWedding(WEDDING_SLUG);
   if (!wedding) return {};
 
-  const og = wedding.og ?? {};
-  const image       = og.image ?? '/og-image.jpg';
-  const title       = og.title_universal       ?? `${wedding.bride_name} & ${wedding.groom_name} — Wedding Invitation 💌`;
+  const og   = wedding.og ?? {};
+  const site = (wedding.site_config ?? {}) as Record<string, string>;
+  const image    = og.image ?? '/og-image.jpg';
+  const tabTitle = site.tab_title ?? `${wedding.bride_name} & ${wedding.groom_name} — Wedding Invitation`;
+  const ogTitle  = og.title_universal       ?? tabTitle;
   const description = og.description_universal ?? `You're invited to celebrate the wedding of ${wedding.bride_name} & ${wedding.groom_name}.`;
 
   return {
-    title,
+    title: tabTitle,
     description,
-    openGraph: { title, description, type: 'website', images: [{ url: image, width: 953, height: 501, alt: `${wedding.bride_name} & ${wedding.groom_name}` }] },
-    twitter:   { card: 'summary_large_image', title, description, images: [image] },
+    openGraph: { title: ogTitle, description, type: 'website', images: [{ url: image, width: 953, height: 501, alt: `${wedding.bride_name} & ${wedding.groom_name}` }] },
+    twitter:   { card: 'summary_large_image', title: ogTitle, description, images: [image] },
   };
 }
 

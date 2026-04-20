@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { weddingConfig } from "@/lib/wedding-config";
 import {
   generateWhatsAppShareURL,
   generateWhatsAppDirectURL,
@@ -20,7 +19,11 @@ export async function POST(_req: NextRequest, { params }: Params) {
       return NextResponse.json({ error: "Wedding not found" }, { status: 404 });
     }
 
-    const inviteBase = `${(process.env.INVITE_BASE_URL ?? "").replace(/\/$/, "")}/invite/${weddingConfig.slug}`;
+    const baseURL = (
+      process.env.NEXT_PUBLIC_BASE_URL ??
+      (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` :
+       process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000")
+    ).replace(/\/$/, "");
 
     // ── Fetch categories and VIP guests in parallel ───────────────────────
     const [categories, vipGuests] = await Promise.all([
@@ -43,7 +46,7 @@ export async function POST(_req: NextRequest, { params }: Params) {
 
     // ── Category share links ──────────────────────────────────────────────
     const categoryLinks = categories.map((cat) => {
-      const catInviteURL = `${inviteBase}/${cat.slug}`;
+      const catInviteURL = `${baseURL}/${cat.slug}`;
       const message = generateCategoryShareMessage(wedding, cat, catInviteURL);
       return {
         id:                   cat.id,
@@ -59,7 +62,7 @@ export async function POST(_req: NextRequest, { params }: Params) {
     const vipLinks = vipGuests
       .filter((g) => g.phone)
       .map((g) => {
-        const guestInviteURL = `${inviteBase}/guest/${g.slug}`;
+        const guestInviteURL = `${baseURL}/${g.slug}`;
         const message = generatePersonalShareMessage(wedding, g, guestInviteURL);
         return {
           id:               g.id,

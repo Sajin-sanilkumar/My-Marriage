@@ -3,7 +3,7 @@ import { PrismaClient, Tier } from "@prisma/client";
 const prisma = new PrismaClient();
 
 async function main() {
-  const existing = await prisma.wedding.findUnique({ where: { slug: "sajin-and-keerthan" } });
+  const existing = await prisma.wedding.findUnique({ where: { slug: "sajin-and-keerthana" } });
   if (existing) {
     console.log("Wedding already exists:", existing.id);
     return;
@@ -11,7 +11,7 @@ async function main() {
 
   const wedding = await prisma.wedding.create({
     data: {
-      slug:             "sajin-and-keerthan",
+      slug:             "sajin-and-keerthana",
       bride_name:       "Keerthan",
       groom_name:       "Sajin",
       bride_family:     "",

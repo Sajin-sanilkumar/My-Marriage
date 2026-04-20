@@ -1,8 +1,11 @@
 {
-  "/page": "app/page.js",
-  "/api/track/click/route": "app/api/track/click/route.js",
-  "/favicon.ico/route": "app/favicon.ico/route.js",
+  "/[slug]/page": "app/[slug]/page.js",
+  "/login/page": "app/login/page.js",
+  "/api/login/route": "app/api/login/route.js",
+  "/api/weddings/[slug]/analytics/route": "app/api/weddings/[slug]/analytics/route.js",
   "/api/weddings/[slug]/route": "app/api/weddings/[slug]/route.js",
-  "/_not-found/page": "app/_not-found/page.js",
+  "/favicon.ico/route": "app/favicon.ico/route.js",
+  "/admin/rsvps/page": "app/admin/rsvps/page.js",
+  "/admin/page": "app/admin/page.js",
   "/admin/content/page": "app/admin/content/page.js"
 }

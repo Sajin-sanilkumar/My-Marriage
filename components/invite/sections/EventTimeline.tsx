@@ -45,6 +45,11 @@ function formatDate(iso: string): string {
 }
 
 function formatTime(t: string): string {
+  // Handle if time already includes AM/PM (e.g., "10:00 AM")
+  if (t.toUpperCase().includes('AM') || t.toUpperCase().includes('PM')) {
+    return t; // Already formatted
+  }
+  // Handle if time is in HH:MM format (24-hour)
   const [h, m] = t.split(':').map(Number);
   const ampm = h >= 12 ? 'PM' : 'AM';
   const hour = h % 12 || 12;

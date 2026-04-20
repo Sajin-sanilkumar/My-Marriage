@@ -5,30 +5,12 @@ import { motion, useScroll, useTransform } from 'framer-motion';
 export interface HeroSectionProps {
   brideName: string;
   groomName: string;
-  brideFamily?: string;
-  groomFamily?: string;
   date: string;
   venue: string;
   guestName?: string;
   tagline?: string;
   onScrollDown?: () => void;
-}
-
-function formatWeddingDate(iso: string): string {
-  if (!iso) return '';
-  const d = new Date(iso);
-  // Use UTC accessors — time is stored as "wall-clock UTC" (no offset applied)
-  const day   = d.getUTCDate();
-  const month = d.toLocaleString('en', { month: 'long', timeZone: 'UTC' });
-  const year  = d.getUTCFullYear();
-  const h     = d.getUTCHours();
-  const m     = d.getUTCMinutes();
-  const base  = `${day} ${month} ${year}`;
-  if (h === 0 && m === 0) return base;
-  const ampm  = h >= 12 ? 'PM' : 'AM';
-  const hour  = h % 12 || 12;
-  const mins  = m.toString().padStart(2, '0');
-  return `${base}  ·  ${hour}:${mins} ${ampm}`;
+  coverPhoto?: string | null;
 }
 
 const EASE = [0.22, 1, 0.36, 1] as const;
@@ -116,16 +98,13 @@ function Flourish({ scale = 1 }: { scale?: number }) {
 export function HeroSection({
   brideName,
   groomName,
-  brideFamily,
-  groomFamily,
   date,
   venue,
   guestName,
   tagline,
   onScrollDown,
+  coverPhoto,
 }: HeroSectionProps) {
-  const formattedDate = formatWeddingDate(date);
-  const showFamilies  = brideFamily || groomFamily;
   const { scrollY } = useScroll();
   const archY             = useTransform(scrollY, [0, 500], [0, -30]);
   const bottomFlourishY   = useTransform(scrollY, [0, 500], [0,  30]);
@@ -137,11 +116,18 @@ export function HeroSection({
   const MASTER_DELAY = 4.6;
   const baseDelay = MASTER_DELAY + (guestName ? 0.6 : 0);
 
+  const sectionStyle = coverPhoto
+    ? { backgroundImage: `url(${coverPhoto})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+    : { background: BG };
+
   return (
     <section
       className="relative flex min-h-screen items-center justify-center overflow-hidden"
-      style={{ background: BG }}
+      style={sectionStyle}
     >
+      {coverPhoto && (
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0" style={{ background: 'rgba(14,11,8,0.72)' }} />
+      )}
       {/* Grain */}
       <div
         aria-hidden="true"
@@ -376,25 +362,6 @@ export function HeroSection({
           <Flourish scale={0.92} />
         </motion.div>
 
-        {/* Family names */}
-        {showFamilies && (
-          <motion.p
-            className="font-sans"
-            style={{
-              fontSize: '9px',
-              textTransform: 'uppercase',
-              letterSpacing: '3px',
-              color: 'rgba(201,168,76,0.52)',
-              marginBottom: '6px',
-            }}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.85, delay: baseDelay + 1.05, ease: EASE }}
-          >
-            {[brideFamily, groomFamily].filter(Boolean).join('  ·  ')}
-          </motion.p>
-        )}
-
         {/* Date */}
         <motion.p
           className="font-sans"
@@ -409,7 +376,7 @@ export function HeroSection({
           animate={{ opacity: 0.92 }}
           transition={{ duration: 0.85, delay: baseDelay + 1.12, ease: EASE }}
         >
-          {formattedDate}
+          {date}
         </motion.p>
 
         {/* Thin rule */}
