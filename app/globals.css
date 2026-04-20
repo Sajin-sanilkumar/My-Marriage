@@ -2,6 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── Shadcn / dashboard CSS variables ───────────────────────────────────────── */
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -81,6 +82,38 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* ── Invite page global styles ──────────────────────────────────────────────── */
+
+html {
+  scroll-behavior: smooth;
+  overscroll-behavior-y: none;
+}
+
+/* Gold text selection */
+::selection {
+  background-color: rgba(201, 168, 76, 0.15);
+  color: inherit;
+}
+
+/* Thin premium scrollbar for invite pages */
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: rgba(201, 168, 76, 0.3);
+  border-radius: 2px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(201, 168, 76, 0.5);
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+[data-scroll] {
+  touch-action: pan-y;
 }
 
 @layer utilities {

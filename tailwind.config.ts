@@ -10,39 +10,56 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: "hsl(var(--background))",
-        foreground: "hsl(var(--foreground))",
+        // Invite palette
+        gold: {
+          50:  "#FBF7EF",
+          100: "#F5EBDA",
+          200: "#ECDBB8",
+          300: "#D4B978",
+          400: "#C9A84C",
+          500: "#B8941F",
+          600: "#9A7B18",
+          700: "#7A6113",
+          800: "#5C490F",
+          900: "#3E310A",
+        },
+        cream:    "#FAF6F0",
+        charcoal: "#1C1C1C",
+        warmgray: "#6B6560",
+        // Dashboard / shadcn palette
+        background:  "hsl(var(--background))",
+        foreground:  "hsl(var(--foreground))",
         card: {
-          DEFAULT: "hsl(var(--card))",
+          DEFAULT:    "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
         popover: {
-          DEFAULT: "hsl(var(--popover))",
+          DEFAULT:    "hsl(var(--popover))",
           foreground: "hsl(var(--popover-foreground))",
         },
         primary: {
-          DEFAULT: "hsl(var(--primary))",
+          DEFAULT:    "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
         },
         secondary: {
-          DEFAULT: "hsl(var(--secondary))",
+          DEFAULT:    "hsl(var(--secondary))",
           foreground: "hsl(var(--secondary-foreground))",
         },
         muted: {
-          DEFAULT: "hsl(var(--muted))",
+          DEFAULT:    "hsl(var(--muted))",
           foreground: "hsl(var(--muted-foreground))",
         },
         accent: {
-          DEFAULT: "hsl(var(--accent))",
+          DEFAULT:    "hsl(var(--accent))",
           foreground: "hsl(var(--accent-foreground))",
         },
         destructive: {
-          DEFAULT: "hsl(var(--destructive))",
+          DEFAULT:    "hsl(var(--destructive))",
           foreground: "hsl(var(--destructive-foreground))",
         },
         border: "hsl(var(--border))",
-        input: "hsl(var(--input))",
-        ring: "hsl(var(--ring))",
+        input:  "hsl(var(--input))",
+        ring:   "hsl(var(--ring))",
         chart: {
           "1": "hsl(var(--chart-1))",
           "2": "hsl(var(--chart-2))",
@@ -51,15 +68,20 @@ const config: Config = {
           "5": "hsl(var(--chart-5))",
         },
         sidebar: {
-          DEFAULT: "hsl(var(--sidebar))",
-          foreground: "hsl(var(--sidebar-foreground))",
-          primary: "hsl(var(--sidebar-primary))",
+          DEFAULT:              "hsl(var(--sidebar))",
+          foreground:           "hsl(var(--sidebar-foreground))",
+          primary:              "hsl(var(--sidebar-primary))",
           "primary-foreground": "hsl(var(--sidebar-primary-foreground))",
-          accent: "hsl(var(--sidebar-accent))",
-          "accent-foreground": "hsl(var(--sidebar-accent-foreground))",
-          border: "hsl(var(--sidebar-border))",
-          ring: "hsl(var(--sidebar-ring))",
+          accent:               "hsl(var(--sidebar-accent))",
+          "accent-foreground":  "hsl(var(--sidebar-accent-foreground))",
+          border:               "hsl(var(--sidebar-border))",
+          ring:                 "hsl(var(--sidebar-ring))",
         },
+      },
+      fontFamily: {
+        serif: ["var(--font-cormorant)", "Georgia", "serif"],
+        sans:  ["var(--font-jost)", "system-ui", "sans-serif"],
+        geist: ["var(--font-geist-sans)", "system-ui", "sans-serif"],
       },
       borderRadius: {
         lg: "var(--radius)",

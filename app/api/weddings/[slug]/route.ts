@@ -33,9 +33,12 @@ export async function PUT(req: NextRequest, { params }: Params) {
     // Disallow changing the slug or id via this endpoint
     const { id: _id, slug: _slug, created_at: _ca, updated_at: _ua, ...updateData } = body;
 
-    // Convert wedding_date string to Date if present
+    // Convert wedding_date string to Date if present.
+    // Append 'Z' so the value is treated as UTC (wall-clock storage — no timezone shift).
     if (updateData.wedding_date) {
-      updateData.wedding_date = new Date(updateData.wedding_date);
+      const raw = String(updateData.wedding_date);
+      const normalized = /[Zz]|[+-]\d{2}:\d{2}$/.test(raw) ? raw : raw + 'Z';
+      updateData.wedding_date = new Date(normalized);
     }
 
     const wedding = await prisma.wedding.update({

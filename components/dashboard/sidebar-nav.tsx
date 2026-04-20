@@ -9,16 +9,18 @@ import {
   ClipboardList,
   MessageCircle,
   Download,
+  FileText,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export const navItems = [
-  { href: "/dashboard",           label: "Overview",        icon: LayoutDashboard },
-  { href: "/dashboard/categories",label: "Categories",      icon: FolderOpen      },
-  { href: "/dashboard/guests",    label: "Guests",          icon: Users           },
-  { href: "/dashboard/rsvps",     label: "RSVP Responses",  icon: ClipboardList   },
-  { href: "/dashboard/whatsapp",  label: "WhatsApp Share",  icon: MessageCircle   },
-  { href: "/dashboard/export",    label: "Export",          icon: Download        },
+  { href: "/admin",            label: "Overview",        icon: LayoutDashboard },
+  { href: "/admin/content",    label: "Content",         icon: FileText        },
+  { href: "/admin/categories", label: "Categories",      icon: FolderOpen      },
+  { href: "/admin/guests",     label: "Guests",          icon: Users           },
+  { href: "/admin/rsvps",      label: "RSVP Responses",  icon: ClipboardList   },
+  { href: "/admin/whatsapp",   label: "WhatsApp Share",  icon: MessageCircle   },
+  { href: "/admin/export",     label: "Export",          icon: Download        },
 ];
 
 export function SidebarNav() {
@@ -28,7 +30,7 @@ export function SidebarNav() {
     <nav className="flex flex-col gap-0.5 px-3 py-2">
       {navItems.map(({ href, label, icon: Icon }) => {
         const active =
-          href === "/dashboard" ? pathname === href : pathname.startsWith(href);
+          href === "/admin" ? pathname === href : pathname.startsWith(href);
         return (
           <Link
             key={href}
@@ -57,7 +59,7 @@ export function MobileNav() {
     <nav className="flex items-center justify-around px-2 py-1">
       {navItems.map(({ href, label, icon: Icon }) => {
         const active =
-          href === "/dashboard" ? pathname === href : pathname.startsWith(href);
+          href === "/admin" ? pathname === href : pathname.startsWith(href);
         return (
           <Link
             key={href}
