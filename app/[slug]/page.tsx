@@ -3,6 +3,8 @@ import { fetchWedding, resolveSlug } from '@/lib/invite-api';
 import { InvitationPage } from '@/components/invite/InvitationPage';
 import { notFound } from 'next/navigation';
 
+export const dynamic = 'force-dynamic';
+
 interface Props {
   params: { slug: string };
 }

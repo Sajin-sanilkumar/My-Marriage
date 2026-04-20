@@ -3,6 +3,8 @@ import { fetchWedding } from '@/lib/invite-api';
 import { InvitationPage } from '@/components/invite/InvitationPage';
 import { notFound } from 'next/navigation';
 
+export const dynamic = 'force-dynamic';
+
 const WEDDING_SLUG = process.env.WEDDING_SLUG ?? '';
 
 export async function generateMetadata(): Promise<Metadata> {
