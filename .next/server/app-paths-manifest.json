@@ -1,6 +1,6 @@
 {
-  "/login/page": "app/login/page.js",
   "/[slug]/page": "app/[slug]/page.js",
-  "/admin/content/page": "app/admin/content/page.js",
-  "/admin/rsvps/page": "app/admin/rsvps/page.js"
+  "/login/page": "app/login/page.js",
+  "/admin/rsvps/page": "app/admin/rsvps/page.js",
+  "/admin/content/page": "app/admin/content/page.js"
 }
