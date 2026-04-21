@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { motion, useInView, useScroll, useTransform } from 'framer-motion';
+import { formatWeddingDate, formatWeddingTime } from '@/lib/date-utils';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -31,31 +32,8 @@ export interface EventTimelineProps {
 const EASE = [0.22, 1, 0.36, 1] as const;
 
 // ---------------------------------------------------------------------------
-// Helpers
+// Helpers (removed local formatDate/formatTime in favor of shared utils)
 // ---------------------------------------------------------------------------
-
-function formatDate(iso: string): string {
-  // Split manually to avoid timezone shifting
-  const [y, mo, d] = iso.split('T')[0].split('-').map(Number);
-  return new Date(y, mo - 1, d).toLocaleDateString('en-US', {
-    month: 'long',
-    day: 'numeric',
-    year: 'numeric',
-  });
-}
-
-function formatTime(t: string): string {
-  // Handle if time already includes AM/PM (e.g., "10:00 AM")
-  if (t.toUpperCase().includes('AM') || t.toUpperCase().includes('PM')) {
-    return t; // Already formatted
-  }
-  // Handle if time is in HH:MM format (24-hour)
-  const [h, m] = t.split(':').map(Number);
-  const ampm = h >= 12 ? 'PM' : 'AM';
-  const hour = h % 12 || 12;
-  const mins = m === 0 ? '' : `:${String(m).padStart(2, '0')}`;
-  return `${hour}${mins} ${ampm}`;
-}
 
 // ---------------------------------------------------------------------------
 // SmallOrnament — 60px version of the hero flourish
@@ -187,7 +165,7 @@ function EventRow({
                 className="mb-3 inline-block font-sans text-gold-500"
                 style={{ fontSize: '10px', letterSpacing: '3px', textTransform: 'uppercase' }}
               >
-                {formatDate(event.date)}
+                {formatWeddingDate(event.date)}
               </p>
 
               {/* Event name */}
@@ -200,7 +178,7 @@ function EventRow({
 
               {/* Time range */}
               <p className="mb-5 font-sans text-[13px] text-warmgray/70">
-                {formatTime(event.start_time)}&thinsp;&mdash;&thinsp;{formatTime(event.end_time)}
+                {formatWeddingTime(event.start_time)}&thinsp;&mdash;&thinsp;{formatWeddingTime(event.end_time)}
               </p>
 
               {/* Thin divider */}

@@ -73,7 +73,13 @@ export function InvitationPage({ wedding, events, linkType, categoryId, guestId,
 
   const scrollToTimeline = () => { timelineRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }); };
 
-  const primaryVenueName = events[0]?.venue_name ?? '';
+  const mainEvent = events.find(e => 
+    e.name.toLowerCase().includes('wedding') || 
+    e.name.toLowerCase().includes('ceremony') ||
+    e.name.toLowerCase().includes('marriage')
+  ) || events[0];
+
+  const primaryVenueName = mainEvent?.venue_name ?? '';
   const tagline = customGreeting ?? wedding.greeting_default ?? 'Together with their families';
 
   const configJson = wedding.config_json ?? {};

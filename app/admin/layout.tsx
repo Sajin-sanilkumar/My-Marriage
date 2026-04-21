@@ -4,6 +4,7 @@ import { SidebarNav, MobileNav } from "@/components/dashboard/sidebar-nav";
 import { Badge } from "@/components/ui/badge";
 import { CalendarDays, Heart } from "lucide-react";
 import { weddingConfig } from "@/lib/wedding-config";
+import Image from "next/image";
 
 const WEDDING = {
   brideFirst: weddingConfig.bride,
@@ -19,10 +20,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       {/* Desktop sidebar */}
       <aside className="hidden md:flex md:flex-col md:w-56 lg:w-60 shrink-0 border-r border-zinc-200 bg-white">
         <div className="flex items-center gap-2 h-14 px-4 border-b border-zinc-100">
-          <div className="flex items-center justify-center h-7 w-7 rounded-md bg-zinc-900">
-            <Heart className="h-3.5 w-3.5 text-white fill-white" />
+          <div className="flex items-center justify-center h-8 w-8 relative">
+            <Image src="/logo.webp" alt="Momentry Logo" fill className="object-contain" />
           </div>
-          <span className="text-sm font-semibold text-zinc-900 tracking-tight">Wedvite</span>
+          <span className="text-sm font-bold text-zinc-900 tracking-tight">Momentry by Urbanzi</span>
         </div>
 
         <div className="px-4 py-3 border-b border-zinc-100">
@@ -42,7 +43,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </div>
 
         <div className="px-4 py-3 border-t border-zinc-100">
-          <p className="text-[11px] text-zinc-300 leading-tight">Wedvite Admin v1.0</p>
+          <p className="text-[11px] text-zinc-300 leading-tight">Momentry Admin v1.0</p>
         </div>
       </aside>
 
@@ -50,10 +51,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <div className="flex flex-col flex-1 min-w-0">
         <header className="flex items-center justify-between h-14 px-4 md:px-6 border-b border-zinc-200 bg-white shrink-0">
           <div className="flex items-center gap-2 md:hidden">
-            <div className="flex items-center justify-center h-7 w-7 rounded-md bg-zinc-900">
-              <Heart className="h-3.5 w-3.5 text-white fill-white" />
+            <div className="flex items-center justify-center h-8 w-8 relative">
+              <Image src="/logo.webp" alt="Momentry Logo" fill className="object-contain" />
             </div>
-            <span className="text-sm font-semibold text-zinc-900">Wedvite</span>
+            <span className="text-sm font-bold text-zinc-900">Momentry by Urbanzi</span>
           </div>
           <div className="hidden md:flex items-center gap-2">
             <span className="text-sm font-semibold text-zinc-900">{WEDDING.groomFirst} &amp; {WEDDING.brideFirst}</span>

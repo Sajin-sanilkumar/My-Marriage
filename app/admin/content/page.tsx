@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { ImageUpload } from "@/components/dashboard/ImageUpload";
 import { AudioUpload } from "@/components/dashboard/AudioUpload";
 import { cn } from "@/lib/utils";
+import { formatWeddingDate, formatWeddingTime } from "@/lib/date-utils";
 
 const WEDDING_SLUG = process.env.NEXT_PUBLIC_WEDDING_SLUG ?? "sajin-and-keerthana";
 
@@ -627,8 +628,8 @@ export default function ContentPage() {
                     <div className="space-y-0.5 min-w-0 flex-1">
                       <p className="text-sm font-semibold text-zinc-900">{ev.name}</p>
                       <p className="text-xs text-zinc-500">
-                        {new Date(ev.date).toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" })}
-                        {" · "}{ev.start_time}{ev.end_time ? ` – ${ev.end_time}` : ""}
+                        {formatWeddingDate(ev.date)}
+                        {" · "}{formatWeddingTime(ev.start_time)}{ev.end_time ? ` – ${formatWeddingTime(ev.end_time)}` : ""}
                       </p>
                       <p className="text-xs text-zinc-400 truncate">{ev.venue_name} · {ev.venue_address}</p>
                     </div>

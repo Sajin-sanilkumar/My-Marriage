@@ -4,6 +4,7 @@ import { useState, Suspense } from 'react';
 import { ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useSearchParams } from 'next/navigation';
 
@@ -27,9 +28,12 @@ function LoginContent() {
                 secure access
               </div>
               <div className="space-y-4">
+                <div className="relative mb-4 h-24 w-24">
+                  <Image src="/logo.webp" alt="Momentry by Urbanzi" fill className="object-contain" />
+                </div>
                 <h1 className="text-4xl font-semibold tracking-tight text-white">Welcome Back</h1>
                 <p className="max-w-md text-sm text-slate-400">
-                  Enter your administrator credentials to access the Wedvite dashboard. Your login is protected with JWT encryption for secure session handling.
+                  Enter your administrator credentials to access the Momentry dashboard. Your login is protected with JWT encryption for secure session handling.
                 </p>
               </div>
               <div className="rounded-[1.5rem] border border-slate-700/80 bg-slate-950/70 p-5 text-sm text-slate-400">

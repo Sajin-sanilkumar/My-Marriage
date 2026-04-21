@@ -3,6 +3,7 @@
 import { useState, useRef } from 'react';
 import { motion, useInView, useAnimation, AnimatePresence } from 'framer-motion';
 import { submitRsvp } from '@/lib/invite-client';
+import { formatWeddingDate, formatWeddingTime } from '@/lib/date-utils';
 
 interface EventItem {
   id: string;
@@ -232,7 +233,7 @@ export function RsvpSection({ events, linkType, categoryId, guestId, guestName, 
                             className={`flex min-h-[52px] w-full items-center justify-between rounded-[3px] border px-4 py-3 text-left transition-all duration-300 ${sel ? 'border-gold-400 bg-gold-500/20' : 'border-gold-700 hover:border-gold-500'}`}>
                             <div>
                               <p className="font-sans text-[14px] text-cream">{event.name}</p>
-                              <p className="font-sans text-[11px] text-gold-300/50">{event.date}{event.start_time ? ` · ${event.start_time}` : ''}</p>
+                              <p className="font-sans text-[11px] text-gold-300/50">{formatWeddingDate(event.date)}{event.start_time ? ` · ${formatWeddingTime(event.start_time)}` : ''}</p>
                             </div>
                             <motion.div animate={sel ? { scale: [1, 1.2, 0.9, 1] } : { scale: 1 }} transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
                               className={`flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full border transition-colors duration-300 ${sel ? 'border-gold-400 bg-gold-400' : 'border-gold-700'}`}>

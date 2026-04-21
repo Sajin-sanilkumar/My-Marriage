@@ -37,13 +37,18 @@ const BASE_URL =
 export async function generateMetadata(): Promise<Metadata> {
   const wedding = await fetchWedding(process.env.WEDDING_SLUG ?? '');
   const site = (wedding?.site_config ?? {}) as Record<string, string>;
-  const title       = site.tab_title       ?? (wedding ? `${wedding.bride_name} & ${wedding.groom_name} — Wedding Invitation` : 'Wedding Invitation');
+  const title       = site.tab_title       ?? (wedding ? `${wedding.bride_name} & ${wedding.groom_name} — Momentry by Urbanzi` : 'Momentry by Urbanzi');
   const description = site.tab_description ?? (wedding ? `You're invited to celebrate the wedding of ${wedding.bride_name} & ${wedding.groom_name}.` : '');
 
   return {
     metadataBase: new URL(BASE_URL),
     title,
     description,
+    icons: {
+      icon: '/logo.webp',
+      shortcut: '/logo.webp',
+      apple: '/logo.webp',
+    },
     robots: { index: false, follow: false },
   };
 }

@@ -1,6 +1,7 @@
 'use client';
 
 import { motion, useScroll, useTransform } from 'framer-motion';
+import { formatWeddingDate } from '@/lib/date-utils';
 
 export interface HeroSectionProps {
   brideName: string;
@@ -241,7 +242,7 @@ export function HeroSection({
             className="font-sans text-[9px] uppercase"
             style={{
               letterSpacing: '4px',
-              color: 'rgba(242,232,212,0.42)',
+              color: 'rgba(242,232,212,0.72)',
               whiteSpace: 'nowrap',
             }}
           >
@@ -376,13 +377,13 @@ export function HeroSection({
           animate={{ opacity: 0.92 }}
           transition={{ duration: 0.85, delay: baseDelay + 1.12, ease: EASE }}
         >
-          {date}
+          {formatWeddingDate(date)}
         </motion.p>
 
         {/* Thin rule */}
         <motion.div
           className="my-3"
-          style={{ height: '0.5px', background: 'rgba(201,168,76,0.28)' }}
+          style={{ height: '0.5px', background: 'rgba(201,168,76,0.48)' }}
           initial={{ width: 0, opacity: 0 }}
           animate={{ width: 30, opacity: 1 }}
           transition={{ duration: 0.7, delay: baseDelay + 1.28, ease: EASE }}
@@ -395,7 +396,7 @@ export function HeroSection({
             fontSize: '9.5px',
             textTransform: 'uppercase',
             letterSpacing: '2.5px',
-            color: 'rgba(242,232,212,0.28)',
+            color: 'rgba(242,232,212,0.85)',
           }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
