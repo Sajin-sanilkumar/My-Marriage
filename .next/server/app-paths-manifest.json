@@ -1,8 +1,5 @@
 {
   "/page": "app/page.js",
-  "/api/weddings/[slug]/route": "app/api/weddings/[slug]/route.js",
-  "/login/page": "app/login/page.js",
-  "/api/weddings/[slug]/analytics/route": "app/api/weddings/[slug]/analytics/route.js",
-  "/admin/page": "app/admin/page.js",
+  "/api/track/click/route": "app/api/track/click/route.js",
   "/admin/content/page": "app/admin/content/page.js"
 }

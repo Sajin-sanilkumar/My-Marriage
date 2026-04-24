@@ -407,17 +407,13 @@ export function HeroSection({
       </motion.div>
 
       {/* Scroll indicator */}
-      <motion.div
-        aria-hidden={!onScrollDown}
-        className="absolute bottom-8 left-1/2 sm:bottom-10"
-        style={{ transform: 'translateX(-50%)', cursor: onScrollDown ? 'pointer' : 'default' }}
+      <motion.button
+        type="button"
+        aria-label="Scroll to explore"
+        className="absolute bottom-8 left-1/2 sm:bottom-10 -translate-x-1/2 bg-transparent border-0 p-0 outline-none"
+        style={{ cursor: 'pointer' }}
         onClick={onScrollDown}
-        role={onScrollDown ? 'button' : undefined}
-        tabIndex={onScrollDown ? 0 : undefined}
-        onKeyDown={
-          onScrollDown ? (e) => e.key === 'Enter' && onScrollDown() : undefined
-        }
-        whileTap={onScrollDown ? { scale: 0.95 } : {}}
+        whileTap={{ scale: 0.95 }}
       >
         <motion.div style={{ opacity: scrollHintOpacity }}>
           <motion.div
@@ -428,10 +424,10 @@ export function HeroSection({
           >
             <motion.div
               style={{
-                width: 1,
-                background: 'linear-gradient(to bottom, rgba(201,168,76,0.72), transparent)',
+                width: 1.5,
+                background: 'linear-gradient(to bottom, rgba(201,168,76,1), transparent)',
               }}
-              animate={{ height: [16, 30, 16] }}
+              animate={{ height: [18, 34, 18] }}
               transition={{ duration: 2.4, repeat: Infinity, ease: 'easeInOut' }}
             />
             <p
@@ -440,14 +436,14 @@ export function HeroSection({
                 fontSize: '8px',
                 textTransform: 'uppercase',
                 letterSpacing: '4px',
-                color: 'rgba(201,168,76,0.42)',
+                color: 'rgba(201,168,76,0.75)',
               }}
             >
               Scroll to explore
             </p>
           </motion.div>
         </motion.div>
-      </motion.div>
+      </motion.button>
     </section>
   );
 }

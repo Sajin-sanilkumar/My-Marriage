@@ -281,6 +281,8 @@ export default function ContentPage() {
         countdown_to: String(cfg.countdown_to ?? ""),
         primaryColor: String(cfg.primaryColor ?? "#C9A84C"),
         showRsvpForm: String(cfg.showRsvpForm ?? "true"),
+        showCoupleProfiles: String(cfg.showCoupleProfiles ?? "true"),
+        showStorySection: String(cfg.showStorySection ?? "true"),
         bridePhoto:   String(cfg.bridePhoto   ?? ""),
         groomPhoto:   String(cfg.groomPhoto   ?? ""),
         backgroundMusic: String(cfg.backgroundMusic ?? ""),
@@ -320,6 +322,8 @@ export default function ContentPage() {
         ...(wedding?.config_json ?? {}),
         bridePhoto: configForm.bridePhoto || null,
         groomPhoto: configForm.groomPhoto || null,
+        showCoupleProfiles: configForm.showCoupleProfiles === "true",
+        showStorySection: configForm.showStorySection === "true",
       };
       const res = await fetch(`/api/weddings/${WEDDING_SLUG}`, {
         method: "PUT", headers: { "Content-Type": "application/json" },
@@ -521,6 +525,25 @@ export default function ContentPage() {
         title="About the Couple"
         description="Write a little about the bride and groom for the 'Meet the Couple' section."
       >
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pb-4 border-b border-zinc-100">
+          <Field label="Show Couple Section" id="show-couple-profiles" hint="Photo, about, hobbies for bride & groom">
+            <select id="show-couple-profiles" value={configForm.showCoupleProfiles}
+              onChange={(e) => setConfigForm((p) => ({ ...p, showCoupleProfiles: e.target.value }))}
+              className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring">
+              <option value="true">Visible</option>
+              <option value="false">Hidden</option>
+            </select>
+          </Field>
+          <Field label="Show Our Story" id="show-story-section" hint="The narrative below the couple profiles">
+            <select id="show-story-section" value={configForm.showStorySection}
+              onChange={(e) => setConfigForm((p) => ({ ...p, showStorySection: e.target.value }))}
+              className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring">
+              <option value="true">Visible</option>
+              <option value="false">Hidden</option>
+            </select>
+          </Field>
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Bride Column */}
           <div className="space-y-4">

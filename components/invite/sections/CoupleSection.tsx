@@ -21,6 +21,8 @@ export interface CoupleSectionProps {
   ourStory?: string;
   bridePhoto?: string;
   groomPhoto?: string;
+  showCoupleProfiles?: boolean;
+  showStorySection?: boolean;
 }
 
 // ── Default Fallbacks ───────────────────────────────────────────────────
@@ -215,7 +217,10 @@ export function CoupleSection({
   ourStory,
   bridePhoto,
   groomPhoto,
+  showCoupleProfiles = true,
+  showStorySection = true,
 }: CoupleSectionProps) {
+  if (!showCoupleProfiles && !showStorySection) return null;
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, margin: '-80px' });
 
@@ -277,61 +282,65 @@ export function CoupleSection({
           </svg>
         </motion.div>
 
-        <div className="flex flex-col sm:flex-row items-center sm:items-start justify-center gap-12 sm:gap-6 md:gap-16">
-          <PersonCard person={brideData} delay={0.1} />
+        {showCoupleProfiles && (
+          <div className="flex flex-col sm:flex-row items-center sm:items-start justify-center gap-12 sm:gap-6 md:gap-16">
+            <PersonCard person={brideData} delay={0.1} />
 
-          <div className="hidden sm:flex flex-col items-center justify-center" style={{ paddingTop: '60px', minWidth: '40px' }}>
-            <div className="h-16 w-px" style={{ background: 'linear-gradient(to bottom, transparent, rgba(184,148,31,0.3), transparent)' }} />
+            <div className="hidden sm:flex flex-col items-center justify-center" style={{ paddingTop: '60px', minWidth: '40px' }}>
+              <div className="h-16 w-px" style={{ background: 'linear-gradient(to bottom, transparent, rgba(184,148,31,0.3), transparent)' }} />
+              <span
+                className="font-serif text-[28px] my-2"
+                style={{ color: 'rgba(184,148,31,0.4)', lineHeight: 1 }}
+              >
+                &
+              </span>
+              <div className="h-16 w-px" style={{ background: 'linear-gradient(to bottom, transparent, rgba(184,148,31,0.3), transparent)' }} />
+            </div>
+
+            <div className="flex sm:hidden">
+              <span className="font-serif text-[32px]" style={{ color: 'rgba(184,148,31,0.35)' }}>&</span>
+            </div>
+
+            <PersonCard person={groomData} delay={0.25} />
+          </div>
+        )}
+
+        {showStorySection && (
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-40px' }}
+            transition={{ duration: 0.7, delay: 0.15, ease: EASE }}
+            className="mt-16 flex flex-col items-center gap-5"
+          >
             <span
-              className="font-serif text-[28px] my-2"
-              style={{ color: 'rgba(184,148,31,0.4)', lineHeight: 1 }}
+              className="font-sans text-[10px] uppercase tracking-[4px]"
+              style={{ color: '#B8941F' }}
             >
-              &
+              Our Story
             </span>
-            <div className="h-16 w-px" style={{ background: 'linear-gradient(to bottom, transparent, rgba(184,148,31,0.3), transparent)' }} />
-          </div>
 
-          <div className="flex sm:hidden">
-            <span className="font-serif text-[32px]" style={{ color: 'rgba(184,148,31,0.35)' }}>&</span>
-          </div>
+            <div
+              className="font-serif text-[64px] leading-none select-none"
+              style={{ color: 'rgba(184,148,31,0.18)', marginBottom: '-16px' }}
+              aria-hidden="true"
+            >
+              "
+            </div>
 
-          <PersonCard person={groomData} delay={0.25} />
-        </div>
+            <p
+              className="font-serif text-[16px] sm:text-[17px] leading-relaxed text-center text-warmgray"
+              style={{ maxWidth: '580px', fontStyle: 'italic', fontWeight: 300 }}
+            >
+              {ourStory || DEFAULT_STORY}
+            </p>
 
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-40px' }}
-          transition={{ duration: 0.7, delay: 0.15, ease: EASE }}
-          className="mt-16 flex flex-col items-center gap-5"
-        >
-          <span
-            className="font-sans text-[10px] uppercase tracking-[4px]"
-            style={{ color: '#B8941F' }}
-          >
-            Our Story
-          </span>
-
-          <div
-            className="font-serif text-[64px] leading-none select-none"
-            style={{ color: 'rgba(184,148,31,0.18)', marginBottom: '-16px' }}
-            aria-hidden="true"
-          >
-            "
-          </div>
-
-          <p
-            className="font-serif text-[16px] sm:text-[17px] leading-relaxed text-center text-warmgray"
-            style={{ maxWidth: '580px', fontStyle: 'italic', fontWeight: 300 }}
-          >
-            {ourStory || DEFAULT_STORY}
-          </p>
-
-          <div
-            className="rounded-full mt-2"
-            style={{ width: '60px', height: '1px', background: 'linear-gradient(90deg, transparent, #C9A84C, transparent)' }}
-          />
-        </motion.div>
+            <div
+              className="rounded-full mt-2"
+              style={{ width: '60px', height: '1px', background: 'linear-gradient(90deg, transparent, #C9A84C, transparent)' }}
+            />
+          </motion.div>
+        )}
 
       </div>
     </section>
